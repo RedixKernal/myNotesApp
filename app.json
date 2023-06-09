@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "my_notes",
+    "slug": "my_notes",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/android/appLogo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/android/myNotesSplashIcon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android/appLogo.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/android/appLogo.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ]
+  }
+}
