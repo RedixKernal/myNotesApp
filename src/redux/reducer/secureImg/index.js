@@ -1,9 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { httpGET } from "../../API/index";
-import firebase from "firebase/app";
-import { collection, addDoc, query, where, getDocs, doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { store } from "../../../config";
+import { createSlice } from '@reduxjs/toolkit';
+import { httpGET } from '../../API/index';
+import firebase from 'firebase/app';
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+} from 'firebase/firestore';
+import { store } from '../../../config';
 const initialState = {
   secureImgData: null,
   isLoading: false,
@@ -11,7 +20,7 @@ const initialState = {
 };
 
 const secureImgReducer = createSlice({
-  name: "secureImg",
+  name: 'secureImg',
   initialState,
   reducers: {
     fetchStart: (state) => {
@@ -32,18 +41,17 @@ const secureImgReducer = createSlice({
 
 export default secureImgReducer.reducer;
 
-const { fetchStart, secureImage, fetchError } =
-secureImgReducer.actions;
+const { fetchStart, secureImage, fetchError } = secureImgReducer.actions;
 
 export const addNewSecureImg = (imgData) => {
   return async (dispatch) => {
     dispatch(fetchStart());
-    console.log(imgData,"imgData")
-    await updateDoc(doc(store, "users", imgData.userDetails?.id), {
+    console.log(imgData, 'imgData');
+    await updateDoc(doc(store, 'users', imgData.userDetails?.id), {
       assets: arrayUnion({
-        img:imgData.img,
-        data:imgData.data,
-      })
+        img: imgData.img,
+        data: imgData.data,
+      }),
     });
   };
 };
@@ -51,11 +59,11 @@ export const addNewSecureImg = (imgData) => {
 export const getSecureImg = (userData) => {
   return async (dispatch) => {
     dispatch(fetchStart());
-    console.log('userData',userData)
+    console.log('userData', userData);
     const oAuth = query(
-      collection(store, "users"),
-      where("userName", "==", userData?.userName),
-      where("password", "==", userData?.password)
+      collection(store, 'users'),
+      where('userName', '==', userData?.userName),
+      where('password', '==', userData?.password),
     );
     await getDocs(oAuth)
       .then((data) => {
@@ -64,10 +72,9 @@ export const getSecureImg = (userData) => {
             ...doc.data(),
             id: doc.id,
           };
-        console.log(userDetails,"userDetailsuserDetails")
-        dispatch(secureImage(userDetails));
+          console.log(userDetails, 'userDetailsuserDetails');
+          dispatch(secureImage(userDetails));
           // dispatch(signinUser(userDetails));
-          // AsyncStorage.setItem("@userdata", JSON.stringify(userDetails));
         });
       })
       .catch((err) => {
@@ -75,4 +82,3 @@ export const getSecureImg = (userData) => {
       });
   };
 };
-

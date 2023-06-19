@@ -17,34 +17,81 @@ import { getSecureImg } from '../../redux/reducer/secureImg/index';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
 import { Formik } from 'formik';
-// import { Ionicons } from '@expo/vector-icons';
-// import { createUser } from '../../redux/reducer/OAuth/index';
+import { updateUserProfile } from '../../redux/reducer/OAuth/index';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+
 const EditProfileActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const { secureImgData } = useSelector(({ secureImg }) => secureImg);
+  const [profileImage, setProfileImage] = useState('');
   const dispatch = useDispatch();
 
   const initialValues = {
     name: '',
     country: '',
-    dob: '',
+    state: '',
     mobile: '',
-    email: '',
   };
+
+  const profileImagePicker = async () => {
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 0.1,
+    });
+
+    try {
+      if (!pickerResult.canceled) {
+        await uploadImageAsync(pickerResult.assets[0].uri);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  async function uploadImageAsync(uri) {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        let reader = new FileReader();
+        reader.readAsDataURL(xhr.response);
+        reader.onload = function () {
+          setProfileImage(reader.result);
+        };
+        reader.onerror = function (error) {
+          console.log('Error: ', error);
+        };
+      };
+      xhr.onerror = function (e) {
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+    blob.close();
+  }
   const handleCreateUser = (val) => {
-    console.log(val);
-    // const payload = {
-    //     userName:val.userName,
-    //     password:val.password,
-    //     email:val.email,
-    // }
-    // dispatch(createUser(payload))
+    const payload = {
+      name: val?.name,
+      profileImage: profileImage,
+      country: val?.country,
+      state: val?.state,
+      mobile: val?.mobile,
+    };
+    dispatch(
+      updateUserProfile(payload, (res) => {
+        console.log(res?.message);
+        navigation.goBack();
+      }),
+    );
   };
   return (
     <SafeAreaView style={styles.dashboardMainContainer}>
@@ -62,11 +109,14 @@ const EditProfileActivity = ({ navigation }) => {
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
               <ScrollView>
                 <View style={styles.formContainer}>
-                  <View style={styles.uploadImageContainer}>
-                    <View style={styles.uploadImageTextContainer}>
-                      <Text style={styles.uploadImageText}>RK</Text>
+                  <TouchableOpacity onPress={profileImagePicker}>
+                    <View style={styles.uploadImageContainer}>
+                      <Ionicons name="camera" size={24} style={styles.cameraIcon} />
+                      <View style={styles.uploadImageTextContainer}>
+                        <Text style={styles.uploadImageText}>RK</Text>
+                      </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                   <View>
                     <View style={styles.formFieldContainer}>
                       <View style={styles.formFieldLabel}>
@@ -108,39 +158,20 @@ const EditProfileActivity = ({ navigation }) => {
 
                     <View style={styles.formFieldContainer}>
                       <View style={styles.formFieldLabel}>
-                        <Text style={styles.formFieldLabelText}>Email</Text>
-                      </View>
-                      <View style={styles.formFieldInput}>
-                        <FontAwesome5 name="mobile-alt" size={24} color="#1E64DDFF" />
-                        <TextInput
-                          style={styles.inputField}
-                          onChangeText={handleChange('email')}
-                          onBlur={handleBlur('email')}
-                          value={values?.mobile}
-                          placeholder="Enter Email"
-                        />
-                      </View>
-                      <View>
-                        {errors.email && <Text style={styles.helperText}>{errors.email}</Text>}
-                      </View>
-                    </View>
-
-                    <View style={styles.formFieldContainer}>
-                      <View style={styles.formFieldLabel}>
-                        <Text style={styles.formFieldLabelText}>Date Of Birth</Text>
+                        <Text style={styles.formFieldLabelText}>State</Text>
                       </View>
                       <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
                         <MaterialCommunityIcons name="clock-time-three" size={24} color="#2560ff" />
                         <TextInput
                           style={styles.inputField}
-                          onChangeText={handleChange('dob')}
-                          onBlur={handleBlur('dob')}
-                          value={values?.dob}
-                          placeholder="Enter Date Of Birth"
+                          onChangeText={handleChange('state')}
+                          onBlur={handleBlur('state')}
+                          value={values?.state}
+                          placeholder="Enter State"
                         />
                       </View>
                       <View>
-                        {errors.dob && <Text style={styles.helperText}>{errors.dob}</Text>}
+                        {errors.state && <Text style={styles.helperText}>{errors.state}</Text>}
                       </View>
                     </View>
 

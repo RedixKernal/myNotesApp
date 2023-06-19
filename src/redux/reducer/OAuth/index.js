@@ -1,9 +1,27 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { httpGET } from "../../API/index";
-import firebase from "firebase/app";
-import { collection, addDoc, query, where, getDocs, doc, setDoc, updateDoc } from "firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { store } from "../../../config";
+import { createSlice } from '@reduxjs/toolkit';
+import { httpGET } from '../../API/index';
+import firebase from 'firebase/app';
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+} from 'firebase/firestore';
+import { store } from '../../../config';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  deleteUser,
+  updatePassword,
+} from 'firebase/auth';
+
 const initialState = {
   userData: null,
   isLoading: false,
@@ -11,7 +29,7 @@ const initialState = {
 };
 
 const OauthReducer = createSlice({
-  name: "Oauth",
+  name: 'Oauth',
   initialState,
   reducers: {
     fetchStart: (state) => {
@@ -33,7 +51,7 @@ const OauthReducer = createSlice({
       state.isLoading = false;
       state.errorMsg = null;
     },
-    deleteUser: (state, action) => {
+    deleteCurrentUser: (state, action) => {
       state.userData = action.payload;
       state.isLoading = false;
       state.errorMsg = null;
@@ -47,87 +65,175 @@ const OauthReducer = createSlice({
 
 export default OauthReducer.reducer;
 
-const { fetchStart, signinUser, updateUser, signoutUser, deleteUser, fetchError } =
+const { fetchStart, signinUser, updateUser, signoutUser, deleteCurrentUser, fetchError } =
   OauthReducer.actions;
 
-export const signinByUser = (userData) => {
+export const createUser = (userData, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
-    console.log('userData',userData)
-    const oAuth = query(
-      collection(store, "users"),
-      where("userName", "==", userData?.userName),
-      where("password", "==", userData?.password)
-    );
-    await getDocs(oAuth)
-      .then((data) => {
-        data.docs.forEach((doc) => {
-          const userDetails = {
-            ...doc.data(),
-            id: doc.id,
-          };
-          dispatch(signinUser(userDetails));
-          AsyncStorage.setItem("@userdata", JSON.stringify(userDetails));
+    const auth = getAuth();
+    await createUserWithEmailAndPassword(
+      auth,
+      userData?.email,
+      userData?.password,
+      userData?.displayName,
+    )
+      .then((userCredential) => {
+        const obj = {
+          userProviderData: {
+            userData: {
+              email: userData?.email,
+              name: userData?.displayName,
+            },
+            meta: {
+              name: userData?.displayName,
+              email: userCredential?.user?.email,
+              providerId: userCredential?.user.providerData?.map((item) => item?.providerId),
+              uidm: userCredential?.user?.uid,
+            },
+            ifno: {
+              appName: 'My_Notes_v1.0.4',
+              emailVerified: userCredential?.user?.emailVerified,
+              isAnonymous: userCredential?.user?.isAnonymous,
+              uid: userCredential?.user?.uid,
+            },
+          },
+        };
+        setDoc(doc(store, 'users', userCredential?.user?.uid), obj);
+        callBack({
+          type: 'success',
+          message: 'Account created successfully',
+        });
+      })
+      .catch((error) => {
+        callBack({
+          type: 'error',
+          message: error.message,
+        });
+      });
+  };
+};
+
+export const signInUser = (userData, callBack) => {
+  return async (dispatch) => {
+    dispatch(fetchStart());
+    const auth = getAuth();
+    await signInWithEmailAndPassword(auth, userData?.email, userData?.password)
+      .then((userCredential) => {
+        callBack({
+          type: 'success',
+          message: 'SignIn successfully',
+          userCredential: userCredential,
+        });
+      })
+      .catch((error) => {
+        callBack({
+          type: 'error',
+          message: error.message,
+        });
+      });
+  };
+};
+
+export const signOutUser = (callBack) => {
+  return async (dispatch) => {
+    dispatch(fetchStart());
+    const auth = getAuth();
+    await signOut(auth)
+      .then(() => {
+        callBack({
+          type: 'success',
+          message: 'SignOut successfully',
+        });
+      })
+      .catch((error) => {
+        callBack({
+          type: 'error',
+          message: error.message,
+        });
+      });
+  };
+};
+
+export const updateUserProfile = (data, callBack) => {
+  return async (dispatch) => {
+    dispatch(fetchStart());
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const obj = {
+      userProviderData: {
+        userData: {
+          ...data,
+        },
+        meta: {
+          ...data,
+          email: user?.email,
+          providerId: user.providerData?.map((item) => item?.providerId),
+          uidm: user?.uid,
+        },
+        ifno: {
+          appName: 'My_Notes_v1.0.4',
+          emailVerified: user?.emailVerified,
+          isAnonymous: user?.isAnonymous,
+          uid: user?.uid,
+        },
+      },
+    };
+    await updateDoc(doc(store, 'users', user?.uid), obj)
+      .then((res) => {
+        callBack({
+          type: 'success',
+          message: 'Profile updated successfully',
         });
       })
       .catch((err) => {
-        dispatch(fetchError(err));
+        callBack({
+          type: 'error',
+          message: 'Failed to update profile',
+        });
       });
   };
 };
 
-export const signoutByUser = (userData) => {
+export const updateUserPassword = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
-    const oAuth = query(
-      collection(store, "users"),
-      where("userName", "==", userData?.userName),
-      where("password", "==", userData?.password)
-    );
-    await getDocs(oAuth)
+    const auth = getAuth();
+    const user = auth.currentUser;
+    await updatePassword(user, data?.password)
       .then(() => {
-        dispatch(signoutUser({ isSignout: true }));
-        AsyncStorage.setItem("@userdata", JSON.stringify({...userData,isSignout:true}));
+        callBack({
+          type: 'success',
+          message: 'Password updated successfully',
+        });
       })
-      .catch((err) => {
-        dispatch(fetchError(err));
+      .catch((error) => {
+        callBack({
+          type: 'error',
+          message: error.message,
+        });
       });
   };
 };
 
-export const createUser = (userData) => {
+export const delUser = (callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
-
-    await addDoc(collection(store, "users"), userData)
-      .then((data) => {
-        console.log(data?.docRef, "data?.docRef?.id");
+    const auth = getAuth();
+    const user = auth.currentUser;
+    await deleteUser(user)
+      .then(() => {
+        deleteDoc(doc(store, 'users', user?.uid));
+        callBack({
+          type: 'success',
+          message: 'Account deleted successfully',
+        });
       })
-      .catch((err) => {
-        dispatch(fetchError(err));
+      .catch((error) => {
+        callBack({
+          type: 'error',
+          message: error.message,
+        });
       });
   };
 };
-
-export const updateByUser = (userData, userDetails) => {
-  
-  return async (dispatch) => {
-    dispatch(fetchStart());
-    console.log(userData,"userDetails, userData", userDetails)
-    await updateDoc(doc(store, "users", userDetails?.id), {...userData, 
-      password:userDetails.password,
-      userName:userDetails.userName
-    });
-    await AsyncStorage.setItem("@userdata", JSON.stringify({...userData, 
-      password:userDetails.password,
-      userName:userDetails.userName,
-      isSignout:false
-    }));
-    dispatch(updateUser({...userData, 
-      password:userDetails.password,
-      userName:userDetails.userName
-    }))
-  };
-};
-
-export const deleteByUser = () => {};

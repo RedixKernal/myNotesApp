@@ -171,7 +171,7 @@ const Styles = StyleSheet.create({
   uploadImageContainer: {
     width: '100%',
     //  borderWidth:2,
-
+    zIndex: 1,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -184,6 +184,18 @@ const Styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  cameraIcon: {
+    position: 'relative',
+    top: 35,
+    left: 35,
+    zIndex: 6,
+    // borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 5,
+    borderRadius: 40,
+    backgroundColor: 'blue',
+    color: 'white',
   },
   uploadImageText: {
     fontSize: 18,

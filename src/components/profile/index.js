@@ -112,8 +112,8 @@ const ProfileActivity = ({ navigation }) => {
               <Ionicons name="time" size={24} color="#2560ff" />
 
               <View style={Styles.labelTextContainer}>
-                <Text style={Styles.leftLabelText}>Date Of Birth</Text>
-                <Text style={Styles.rightLabelText}>24-02-1998</Text>
+                <Text style={Styles.leftLabelText}>State</Text>
+                <Text style={Styles.rightLabelText}>Telangana</Text>
               </View>
             </View>
           </View>
