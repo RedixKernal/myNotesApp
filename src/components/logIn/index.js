@@ -8,7 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
+import { signInUser } from '../../redux/reducer/OAuth/index';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const LoginActivity = ({ navigation }) => {
+  const dispatch = useDispatch();
   const { handleSigninUser } = useContext(OAuth);
   const validationSchema = yup.object().shape({
     userName: yup.string().required('Please enter user name'),
@@ -19,12 +23,29 @@ const LoginActivity = ({ navigation }) => {
   });
 
   const initialValues = {
-    userName: 'Admin',
-    password: 'Admin12',
+    email: 'admin@gmail.com',
+    password: 'admin@18',
   };
 
+  const setuserData = async (res) => {
+    try {
+      const jsonValue = JSON.stringify(res?.userCredential);
+      await AsyncStorage.setItem('@current_user', jsonValue);
+      handleSigninUser(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const handleFormSubmit = (val) => {
-    handleSigninUser(val);
+    const payload = {
+      password: val.password,
+      email: val.email,
+    };
+    dispatch(
+      signInUser(payload, (data) => {
+        setuserData(data);
+      }),
+    );
   };
 
   return (
@@ -41,27 +62,27 @@ const LoginActivity = ({ navigation }) => {
           <Formik
             enableReintialize="true"
             initialValues={initialValues}
-            validationSchema={validationSchema}
+            // validationSchema={validationSchema}
             onSubmit={(values) => handleFormSubmit(values)}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
               <View style={styles.formContainer}>
                 <View style={styles.formFieldContainer}>
                   <View style={styles.formFieldLabel}>
-                    <Text style={styles.formFieldLabelText}>User Name</Text>
+                    <Text style={styles.formFieldLabelText}>Email</Text>
                   </View>
                   <View style={styles.formFieldInput}>
                     <Ionicons name="person-circle-outline" size={26} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
-                      onChangeText={handleChange('userName')}
-                      onBlur={handleBlur('userName')}
-                      value={values?.userName}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      value={values?.email}
                       placeholder="Enter user name"
                     />
                   </View>
                   <View>
-                    {errors.userName && <Text style={styles.helperText}>{errors.userName}</Text>}
+                    {errors.email && <Text style={styles.helperText}>{errors.email}</Text>}
                   </View>
                 </View>
 

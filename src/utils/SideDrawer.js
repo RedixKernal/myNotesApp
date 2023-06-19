@@ -2,16 +2,37 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Image, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { signoutByUser } from '../redux/reducer/OAuth/index';
+import { signOutUser, delUser } from '../redux/reducer/OAuth/index';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OAuth } from '../auth';
 function SideDraWer(props) {
   const { handleSignoutUser, userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
-  const handleFormSubmit = () => {
-    handleSignoutUser();
+
+  const removeuserData = async (res) => {
+    try {
+      await AsyncStorage.removeItem('@current_user');
+      handleSignoutUser(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleSignOut = () => {
+    dispatch(
+      signOutUser((data) => {
+        removeuserData(data);
+      }),
+    );
+  };
+  const handleDeleteUser = () => {
+    dispatch(
+      delUser((data) => {
+        removeuserData(data);
+      }),
+    );
   };
 
   return (
@@ -49,7 +70,7 @@ function SideDraWer(props) {
         </View>
       </DrawerContentScrollView>
       <View style={styles.sideDrawerOptionalMenuContainer}>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={handleDeleteUser}>
           <View style={styles.sideDrawerOptionalMenuItemContainer}>
             <MaterialCommunityIcons
               name="account-remove"
@@ -60,7 +81,7 @@ function SideDraWer(props) {
             <Text style={styles.sideDrawerDeleteAccountText}>Delete account</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleFormSubmit}>
+        <TouchableOpacity onPress={handleSignOut}>
           <View style={styles.sideDrawerOptionalMenuItemContainer}>
             <FontAwesome name="sign-out" size={24} color="gray" style={{ marginHorizontal: 10 }} />
             <Text style={styles.sideDrawerSignOutText}>Signout</Text>

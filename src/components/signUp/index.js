@@ -10,6 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+
 const SignUpActivity = ({ navigation }) => {
   const dispatch = useDispatch();
 
@@ -21,11 +22,16 @@ const SignUpActivity = ({ navigation }) => {
   };
   const handleCreateUser = (val) => {
     const payload = {
-      userName: val.userName,
+      displayName: val.userName,
       password: val.password,
       email: val.email,
     };
-    dispatch(createUser(payload));
+    dispatch(
+      createUser(payload, (res) => {
+        console.log(res?.message);
+        navigation.navigate('LoginActivity');
+      }),
+    );
   };
 
   return (
@@ -48,13 +54,13 @@ const SignUpActivity = ({ navigation }) => {
                     <Text style={styles.formFieldLabelText}>User Name</Text>
                   </View>
                   <View style={styles.formFieldInput}>
-                    <Ionicons name="person-circle-outline" size={26} color="#1E64DDFF" />
+                    <Ionicons name="person-circle-outline" size={24} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
                       onChangeText={handleChange('userName')}
                       onBlur={handleBlur('userName')}
                       value={values?.userName}
-                      placeholder="Enter user name"
+                      placeholder="Enter userName"
                     />
                   </View>
                   <View>
