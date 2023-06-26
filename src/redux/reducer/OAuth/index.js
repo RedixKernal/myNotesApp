@@ -7,6 +7,7 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
   doc,
   setDoc,
   updateDoc,
@@ -79,6 +80,7 @@ export const createUser = (userData, callBack) => {
       userData?.displayName,
     )
       .then((userCredential) => {
+        console.log(userCredential);
         const obj = {
           userProviderData: {
             userData: {
@@ -96,6 +98,7 @@ export const createUser = (userData, callBack) => {
               emailVerified: userCredential?.user?.emailVerified,
               isAnonymous: userCredential?.user?.isAnonymous,
               uid: userCredential?.user?.uid,
+              ...userCredential?.user?.metadata,
             },
           },
         };
@@ -235,5 +238,28 @@ export const delUser = (callBack) => {
           message: error.message,
         });
       });
+  };
+};
+
+export const getUserDetails = (callBack) => {
+  return async (dispatch) => {
+    dispatch(fetchStart());
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const docRef = doc(store, 'users', user?.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      callBack({
+        type: 'success',
+        message: 'User data fetch successfully',
+        data: docSnap.data(),
+      });
+    } else {
+      callBack({
+        type: 'error',
+        message: 'Document not found',
+      });
+    }
   };
 };

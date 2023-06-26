@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
-import { signInUser } from '../../redux/reducer/OAuth/index';
+import { signInUser, getUserDetails } from '../../redux/reducer/OAuth/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const LoginActivity = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,10 +27,15 @@ const LoginActivity = ({ navigation }) => {
     password: 'admin@18',
   };
 
-  const setuserData = async (res) => {
+  const setuserData = async (res, info) => {
+    console.log('fun call');
     try {
+      const jsonInfo = JSON.stringify(info);
       const jsonValue = JSON.stringify(res?.userCredential);
       await AsyncStorage.setItem('@current_user', jsonValue);
+      await AsyncStorage.setItem('@providerData', jsonInfo);
+
+      console.log('hhh');
       handleSigninUser(res);
     } catch (e) {
       console.log(e);
@@ -43,7 +48,13 @@ const LoginActivity = ({ navigation }) => {
     };
     dispatch(
       signInUser(payload, (data) => {
-        setuserData(data);
+        console.log(data);
+        dispatch(
+          getUserDetails((res) => {
+            console.log(res);
+            setuserData(data, res.data);
+          }),
+        );
       }),
     );
   };

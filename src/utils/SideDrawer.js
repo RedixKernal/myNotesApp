@@ -6,10 +6,25 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOutUser, delUser } from '../redux/reducer/OAuth/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { OAuth } from '../auth';
 function SideDraWer(props) {
   const { handleSignoutUser, userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
+  const [loadingData, setLoadingdata] = useState(false);
+  const [userData, setUserData] = useState({});
+  const { getItem } = useAsyncStorage('@providerData');
+
+  const readItemFromStorage = async () => {
+    const item = await getItem();
+    const data = JSON.parse(item);
+    const info = data?.userProviderData;
+    setUserData(info);
+    setLoadingdata(false);
+  };
+  useEffect(() => {
+    readItemFromStorage();
+  }, [props, props.state.history]);
 
   const removeuserData = async (res) => {
     try {
@@ -19,7 +34,6 @@ function SideDraWer(props) {
       console.log(e);
     }
   };
-
   const handleSignOut = () => {
     dispatch(
       signOutUser((data) => {
@@ -38,33 +52,43 @@ function SideDraWer(props) {
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
-        <View style={styles.sideDrawerImageContainer}>
-          {userDetails?.imgURL ? (
-            <Image
-              source={{
-                uri: userDetails?.imgURL,
-              }}
-              style={styles.sideDrawerImage}
-            />
-          ) : (
-            <View style={styles.sideDrawerProfileTextContainer}>
-              <Text style={styles.sideDrawerProfileText}>
-                {/* {userDetails?.userName.charAt(0).toUpperCase()} */}
-                RK
+        {loadingData ? (
+          <Text>...</Text>
+        ) : (
+          <View style={styles.sideDrawerImageContainer}>
+            {userDetails?.imgURL ? (
+              <Image
+                source={{
+                  uri: userDetails?.imgURL,
+                }}
+                style={styles.sideDrawerImage}
+              />
+            ) : (
+              <View style={styles.sideDrawerProfileTextContainer}>
+                <Text style={styles.sideDrawerProfileText}>
+                  {userData?.meta?.name
+                    ? `${userData?.meta?.name?.split(' ')[0]?.charAt(0)?.toUpperCase() ?? ''}${
+                        userData?.meta?.name?.split(' ')[1]?.charAt(0)?.toUpperCase() ?? ''
+                      }`
+                    : 'Redix Kernal'}
+                  {/* {userDetails?.userName.charAt(0).toUpperCase()} */}
+                  {/* RK */}
+                </Text>
+              </View>
+            )}
+            <View style={styles.sideDrawerUserNameContainer}>
+              <Text style={styles.sideDrawerUserNameText}>
+                {userData?.meta?.name ? userData?.meta?.name : 'Redix Kernal'}
+                {/* {userDetails?.userName} */}
+                {/* Redix */}
+              </Text>
+              <Text>
+                {userData?.meta?.email ? userData?.meta?.email : 'RedixKernal@rdx.com'}
+                {/* RedixInfo@gmail.com */}
               </Text>
             </View>
-          )}
-          <View style={styles.sideDrawerUserNameContainer}>
-            <Text style={styles.sideDrawerUserNameText}>
-              {/* {userDetails?.userName} */}
-              Redix
-            </Text>
-            <Text>
-              {/* {userDetails?.email ? userDetails?.email : "Testmail@co.in"} */}
-              RedixInfo@gmail.com
-            </Text>
           </View>
-        </View>
+        )}
         <View>
           <DrawerItemList {...props} />
         </View>
@@ -105,7 +129,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  sideDrawerProfileText: { fontSize: 25, fontWeight: 'bold' },
+  sideDrawerProfileText: { fontSize: 20, fontWeight: 'bold' },
   sideDrawerUserNameContainer: { padding: 10 },
   sideDrawerUserNameText: { fontWeight: 'bold', fontSize: 20 },
   sideDrawerOptionalMenuContainer: { borderTopWidth: 2, borderTopColor: '#F3F4F6FF', margin: 10 },
