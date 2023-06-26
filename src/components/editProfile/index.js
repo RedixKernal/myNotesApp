@@ -17,7 +17,7 @@ import { getSecureImg } from '../../redux/reducer/secureImg/index';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
 import { Formik } from 'formik';
-import { updateUserProfile } from '../../redux/reducer/OAuth/index';
+import { updateUserProfile, getUserDetails } from '../../redux/reducer/OAuth/index';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -25,26 +25,44 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 const EditProfileActivity = ({ navigation }) => {
-  const { userDetails } = useContext(OAuth);
-  const { secureImgData } = useSelector(({ secureImg }) => secureImg);
   const [profileImage, setProfileImage] = useState('');
-  const dispatch = useDispatch();
-
-  const initialValues = {
+  const [loadingData, setLoadingdata] = useState(true);
+  const [initialValues, setinitialValues] = useState({
     name: '',
     country: '',
     state: '',
     mobile: '',
+  });
+  const [userData, setUserData] = useState({});
+  const { getItem } = useAsyncStorage('@providerData');
+  const dispatch = useDispatch();
+
+  const readItemFromStorage = async () => {
+    const item = await getItem();
+    const data = JSON.parse(item);
+    const info = data?.userProviderData?.meta;
+    setinitialValues({
+      name: info?.name,
+      country: info?.country,
+      state: info?.state,
+      mobile: info?.mobile,
+    });
+    setUserData(info);
+    setLoadingdata(false);
   };
+  useEffect(() => {
+    readItemFromStorage();
+  }, [navigation]);
 
   const profileImagePicker = async () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 4],
-      quality: 0.1,
+      quality: 1,
     });
 
     try {
@@ -78,136 +96,170 @@ const EditProfileActivity = ({ navigation }) => {
     });
     blob.close();
   }
+
+  const providerData = async (res) => {
+    try {
+      const jsonValue = JSON.stringify(res);
+      await AsyncStorage.setItem('@providerData', jsonValue);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const handleCreateUser = (val) => {
     const payload = {
       name: val?.name,
-      profileImage: profileImage,
+      // profileImage: profileImage,
       country: val?.country,
       state: val?.state,
       mobile: val?.mobile,
     };
     dispatch(
       updateUserProfile(payload, (res) => {
-        console.log(res?.message);
-        navigation.goBack();
+        // console.log(res?.message);
+        dispatch(
+          getUserDetails((res) => {
+            // console.log(res.data);
+            providerData(res.data);
+            // navigation.goBack();
+            navigation.navigate('Setting');
+          }),
+        );
       }),
     );
   };
+
   return (
     <SafeAreaView style={styles.dashboardMainContainer}>
       <View style={styles.headerView}>
         <BackHeader navigation={navigation} activityText="Edit Profile" />
       </View>
-      <SafeAreaView style={styles.scrollViewContainer}>
-        <SafeAreaView>
-          <Formik
-            enableReintialize="true"
-            initialValues={initialValues}
-            // validationSchema={validationSchema}
-            onSubmit={(values) => handleCreateUser(values)}
-          >
-            {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-              <ScrollView>
-                <View style={styles.formContainer}>
-                  <TouchableOpacity onPress={profileImagePicker}>
-                    <View style={styles.uploadImageContainer}>
-                      <Ionicons name="camera" size={24} style={styles.cameraIcon} />
-                      <View style={styles.uploadImageTextContainer}>
-                        <Text style={styles.uploadImageText}>RK</Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  <View>
-                    <View style={styles.formFieldContainer}>
-                      <View style={styles.formFieldLabel}>
-                        <Text style={styles.formFieldLabelText}>Name</Text>
-                      </View>
-                      <View style={styles.formFieldInput}>
-                        <Ionicons name="person-circle-outline" size={26} color="#1E64DDFF" />
-                        <TextInput
-                          style={styles.inputField}
-                          onChangeText={handleChange('name')}
-                          onBlur={handleBlur('name')}
-                          value={values?.name}
-                          placeholder="Enter Name"
-                        />
-                      </View>
-                      <View>
-                        {errors.name && <Text style={styles.helperText}>{errors.name}</Text>}
-                      </View>
-                    </View>
-
-                    <View style={styles.formFieldContainer}>
-                      <View style={styles.formFieldLabel}>
-                        <Text style={styles.formFieldLabelText}>Mobile</Text>
-                      </View>
-                      <View style={styles.formFieldInput}>
-                        <FontAwesome5 name="mobile-alt" size={24} color="#1E64DDFF" />
-                        <TextInput
-                          style={styles.inputField}
-                          onChangeText={handleChange('mobile')}
-                          onBlur={handleBlur('mobile')}
-                          value={values?.mobile}
-                          placeholder="Enter Mobile Number"
-                        />
-                      </View>
-                      <View>
-                        {errors.mobile && <Text style={styles.helperText}>{errors.mobile}</Text>}
-                      </View>
-                    </View>
-
-                    <View style={styles.formFieldContainer}>
-                      <View style={styles.formFieldLabel}>
-                        <Text style={styles.formFieldLabelText}>State</Text>
-                      </View>
-                      <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
-                        <MaterialCommunityIcons name="clock-time-three" size={24} color="#2560ff" />
-                        <TextInput
-                          style={styles.inputField}
-                          onChangeText={handleChange('state')}
-                          onBlur={handleBlur('state')}
-                          value={values?.state}
-                          placeholder="Enter State"
-                        />
-                      </View>
-                      <View>
-                        {errors.state && <Text style={styles.helperText}>{errors.state}</Text>}
-                      </View>
-                    </View>
-
-                    <View style={styles.formFieldContainer}>
-                      <View style={styles.formFieldLabel}>
-                        <Text style={styles.formFieldLabelText}>Country</Text>
-                      </View>
-                      <View style={styles.formFieldInput}>
-                        <Ionicons name="flag" size={24} color="#2560ff" />
-                        <TextInput
-                          style={styles.inputField}
-                          onChangeText={handleChange('country')}
-                          onBlur={handleBlur('country')}
-                          value={values?.country}
-                          placeholder="Enter Country"
-                        />
-                      </View>
-                      <View>
-                        {errors.country && <Text style={styles.helperText}>{errors.country}</Text>}
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={styles.signinButtonContainer}>
-                    <TouchableOpacity onPress={handleSubmit}>
-                      <View style={styles.signinButton}>
-                        <Text style={styles.signinButtonText}>Save changes</Text>
+      {loadingData ? (
+        <Text>Loading...</Text>
+      ) : (
+        <SafeAreaView style={styles.scrollViewContainer}>
+          <SafeAreaView>
+            <Formik
+              enableReintialize="true"
+              initialValues={initialValues}
+              // validationSchema={validationSchema}
+              onSubmit={(values) => handleCreateUser(values)}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+                <ScrollView>
+                  <View style={styles.formContainer}>
+                    <TouchableOpacity onPress={profileImagePicker}>
+                      <View style={styles.uploadImageContainer}>
+                        <Ionicons name="camera" size={24} style={styles.cameraIcon} />
+                        <View style={styles.uploadImageTextContainer}>
+                          <Text style={styles.uploadImageText}>
+                            {userData?.name
+                              ? `${userData?.name?.split(' ')[0]?.charAt(0)?.toUpperCase() ?? ''}${
+                                  userData?.name?.split(' ')[1]?.charAt(0)?.toUpperCase() ?? ''
+                                }`
+                              : 'Redix Kernal'}
+                          </Text>
+                        </View>
                       </View>
                     </TouchableOpacity>
+                    <View>
+                      <View style={styles.formFieldContainer}>
+                        <View style={styles.formFieldLabel}>
+                          <Text style={styles.formFieldLabelText}>Name</Text>
+                        </View>
+                        <View style={styles.formFieldInput}>
+                          <Ionicons name="person-circle-outline" size={26} color="#1E64DDFF" />
+                          <TextInput
+                            style={styles.inputField}
+                            onChangeText={handleChange('name')}
+                            onBlur={handleBlur('name')}
+                            value={values?.name}
+                            placeholder="Enter Name"
+                          />
+                        </View>
+                        <View>
+                          {errors.name && <Text style={styles.helperText}>{errors.name}</Text>}
+                        </View>
+                      </View>
+
+                      <View style={styles.formFieldContainer}>
+                        <View style={styles.formFieldLabel}>
+                          <Text style={styles.formFieldLabelText}>Mobile</Text>
+                        </View>
+                        <View style={styles.formFieldInput}>
+                          <FontAwesome5 name="mobile-alt" size={24} color="#1E64DDFF" />
+                          <TextInput
+                            style={styles.inputField}
+                            onChangeText={handleChange('mobile')}
+                            onBlur={handleBlur('mobile')}
+                            value={values?.mobile}
+                            placeholder="Enter Mobile Number"
+                          />
+                        </View>
+                        <View>
+                          {errors.mobile && <Text style={styles.helperText}>{errors.mobile}</Text>}
+                        </View>
+                      </View>
+
+                      <View style={styles.formFieldContainer}>
+                        <View style={styles.formFieldLabel}>
+                          <Text style={styles.formFieldLabelText}>State</Text>
+                        </View>
+                        <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
+                          <MaterialCommunityIcons
+                            name="clock-time-three"
+                            size={24}
+                            color="#2560ff"
+                          />
+                          <TextInput
+                            style={styles.inputField}
+                            onChangeText={handleChange('state')}
+                            onBlur={handleBlur('state')}
+                            value={values?.state}
+                            placeholder="Enter State"
+                          />
+                        </View>
+                        <View>
+                          {errors.state && <Text style={styles.helperText}>{errors.state}</Text>}
+                        </View>
+                      </View>
+
+                      <View style={styles.formFieldContainer}>
+                        <View style={styles.formFieldLabel}>
+                          <Text style={styles.formFieldLabelText}>Country</Text>
+                        </View>
+                        <View style={styles.formFieldInput}>
+                          <Ionicons name="flag" size={24} color="#2560ff" />
+                          <TextInput
+                            style={styles.inputField}
+                            onChangeText={handleChange('country')}
+                            onBlur={handleBlur('country')}
+                            value={values?.country}
+                            placeholder="Enter Country"
+                          />
+                        </View>
+                        <View>
+                          {errors.country && (
+                            <Text style={styles.helperText}>{errors.country}</Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+
+                    <View style={styles.signinButtonContainer}>
+                      <TouchableOpacity onPress={handleSubmit}>
+                        <View style={styles.signinButton}>
+                          <Text style={styles.signinButtonText}>Save changes</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              </ScrollView>
-            )}
-          </Formik>
+                </ScrollView>
+              )}
+            </Formik>
+          </SafeAreaView>
         </SafeAreaView>
-      </SafeAreaView>
+      )}
     </SafeAreaView>
   );
 };

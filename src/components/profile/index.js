@@ -24,10 +24,26 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 const ProfileActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
   const { secureImgData } = useSelector(({ secureImg }) => secureImg);
+  const [loadingData, setLoadingdata] = useState(true);
+  const [userData, setUserData] = useState({});
+  const { getItem } = useAsyncStorage('@providerData');
+
+  const readItemFromStorage = async () => {
+    const item = await getItem();
+    const data = JSON.parse(item);
+    const info = data?.userProviderData;
+    setUserData(info);
+    setLoadingdata(false);
+  };
+  useEffect(() => {
+    readItemFromStorage();
+  }, [navigation, navigation.goBack]);
+  console.log(userData, 'hjhj');
 
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
@@ -51,84 +67,110 @@ const ProfileActivity = ({ navigation }) => {
           }}
         />
       </View>
-      <SafeAreaView style={Styles.safeAreaViewStyles}>
-        <View style={Styles.securityContainer}>
-          {/* <MaterialIcons name="security" size={30} color="green" /> */}
-          {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
+      {loadingData ? (
+        <Text>Loading...</Text>
+      ) : (
+        <SafeAreaView style={Styles.safeAreaViewStyles}>
+          <View style={Styles.securityContainer}>
+            {/* <MaterialIcons name="security" size={30} color="green" /> */}
+            {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
 
-          <View style={Styles.iconContainer}>
-            <MaterialCommunityIcons name="shield-check" size={32} color="green" />
-            {/* <MaterialCommunityIcons name="shield-alert" size={32} color="red" /> */}
-          </View>
-        </View>
-        <View style={Styles.infoViewContainer}>
-          {/* <MaterialIcons name="security" size={30} color="green" /> */}
-          {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
-
-          <Text style={Styles.profileText}>Redix Kernal</Text>
-          <Text style={Styles.profileMailText}>RedixKernal@rdx.com</Text>
-        </View>
-
-        <View style={Styles.counterContainer}>
-          {/* <MaterialIcons name="security" size={30} color="green" /> */}
-          {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
-
-          <View style={Styles.allConutContainer}>
-            <Text style={Styles.allConut}>56</Text>
-            <Text style={Styles.countLabelText}>All</Text>
-          </View>
-
-          <View
-            style={{
-              ...Styles.allConutContainer,
-              ...Styles.middleCounterContainer,
-            }}
-          >
-            <Text style={Styles.allConut}>12</Text>
-            <Text style={Styles.countLabelText}>Favorite</Text>
-          </View>
-
-          <View style={Styles.allConutContainer}>
-            <Text style={Styles.allConut}>06</Text>
-            <Text style={Styles.countLabelText}>Trash</Text>
-          </View>
-        </View>
-
-        <Text style={Styles.labelHeadingText}>About</Text>
-
-        <SafeAreaView style={Styles.actionsSafeAreaViewContainer}>
-          <View style={Styles.listItemContainer}>
-            <View style={Styles.listItemContentContainer}>
-              <Fontisto name="mobile" size={24} color="#2560ff" />
-
-              <View style={Styles.labelTextContainer}>
-                <Text style={Styles.leftLabelText}>Mobile</Text>
-                <Text style={Styles.rightLabelText}>+91 7032491730</Text>
-              </View>
+            <View style={Styles.iconContainer}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 20,
+                }}
+              >
+                {userData?.meta?.name
+                  ? `${userData?.meta?.name?.split(' ')[0]?.charAt(0)?.toUpperCase() ?? ''}${
+                      userData?.meta?.name?.split(' ')[1]?.charAt(0)?.toUpperCase() ?? ''
+                    }`
+                  : 'Redix Kernal'}
+              </Text>
+              {/* <MaterialCommunityIcons name="shield-check" size={32} color="green" /> */}
+              {/* <MaterialCommunityIcons name="shield-alert" size={32} color="red" /> */}
             </View>
           </View>
-          <View style={Styles.listItemContainer}>
-            <View style={Styles.listItemContentContainer}>
-              <Ionicons name="time" size={24} color="#2560ff" />
+          <View style={Styles.infoViewContainer}>
+            {/* <MaterialIcons name="security" size={30} color="green" /> */}
+            {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
 
-              <View style={Styles.labelTextContainer}>
-                <Text style={Styles.leftLabelText}>State</Text>
-                <Text style={Styles.rightLabelText}>Telangana</Text>
-              </View>
+            <Text style={Styles.profileText}>
+              {userData?.meta?.name ? userData?.meta?.name : 'Redix Kernal'}
+            </Text>
+            <Text style={Styles.profileMailText}>
+              {userData?.meta?.email ? userData?.meta?.email : 'RedixKernal@rdx.com'}
+            </Text>
+          </View>
+
+          <View style={Styles.counterContainer}>
+            {/* <MaterialIcons name="security" size={30} color="green" /> */}
+            {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
+
+            <View style={Styles.allConutContainer}>
+              <Text style={Styles.allConut}>56</Text>
+              <Text style={Styles.countLabelText}>All</Text>
+            </View>
+
+            <View
+              style={{
+                ...Styles.allConutContainer,
+                ...Styles.middleCounterContainer,
+              }}
+            >
+              <Text style={Styles.allConut}>12</Text>
+              <Text style={Styles.countLabelText}>Favorite</Text>
+            </View>
+
+            <View style={Styles.allConutContainer}>
+              <Text style={Styles.allConut}>06</Text>
+              <Text style={Styles.countLabelText}>Trash</Text>
             </View>
           </View>
-          <View style={Styles.listItemContainer}>
-            <View style={Styles.listItemContentContainer}>
-              <MaterialIcons name="info" size={24} color="#2560ff" />
 
-              <View style={Styles.labelTextContainer}>
-                <Text style={Styles.leftLabelText}>Country</Text>
-                <Text style={Styles.rightLabelText}>India</Text>
+          <Text style={Styles.labelHeadingText}>About</Text>
+
+          <SafeAreaView style={Styles.actionsSafeAreaViewContainer}>
+            <View style={Styles.listItemContainer}>
+              <View style={Styles.listItemContentContainer}>
+                <Fontisto name="mobile" size={24} color="#2560ff" />
+
+                <View style={Styles.labelTextContainer}>
+                  <Text style={Styles.leftLabelText}>Mobile</Text>
+                  <Text style={Styles.rightLabelText}>
+                    {userData?.meta?.mobile ? userData?.meta?.mobile : '+91 7032491730'}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
+            <View style={Styles.listItemContainer}>
+              <View style={Styles.listItemContentContainer}>
+                <Ionicons name="time" size={24} color="#2560ff" />
+
+                <View style={Styles.labelTextContainer}>
+                  <Text style={Styles.leftLabelText}>State</Text>
+                  <Text style={Styles.rightLabelText}>
+                    {userData?.meta?.state ? userData?.meta?.state : 'Telangana'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View style={Styles.listItemContainer}>
+              <View style={Styles.listItemContentContainer}>
+                <MaterialIcons name="info" size={24} color="#2560ff" />
+
+                <View style={Styles.labelTextContainer}>
+                  <Text style={Styles.leftLabelText}>Country</Text>
+                  <Text style={Styles.rightLabelText}>
+                    {userData?.meta?.country ? userData?.meta?.country : 'India'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </SafeAreaView>
         </SafeAreaView>
-      </SafeAreaView>
+      )}
     </SafeAreaView>
   );
 };
