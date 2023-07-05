@@ -148,9 +148,11 @@ const EditProfileActivity = ({ navigation }) => {
               {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
                 <ScrollView>
                   <View style={styles.formContainer}>
-                    <TouchableOpacity onPress={profileImagePicker}>
+                    <TouchableOpacity
+                    // onPress={profileImagePicker}
+                    >
                       <View style={styles.uploadImageContainer}>
-                        <Ionicons name="camera" size={24} style={styles.cameraIcon} />
+                        {/* <Ionicons name="camera" size={24} style={styles.cameraIcon} /> */}
                         <View style={styles.uploadImageTextContainer}>
                           <Text style={styles.uploadImageText}>
                             {userData?.name

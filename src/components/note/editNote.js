@@ -23,10 +23,13 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { handleNote } from '../../redux/reducer/notes';
 const EditNoteActivity = ({ route, navigation }) => {
   const { userDetails } = useContext(OAuth);
   const { data } = route?.params;
   const dispatch = useDispatch();
+  const [storeDocId, setStoreDocId] = useState('');
   const { secureImgData } = useSelector(({ secureImg }) => secureImg);
   const validationSchema = yup.object().shape({
     userName: yup.string().required('Please enter user name'),
@@ -35,14 +38,27 @@ const EditNoteActivity = ({ route, navigation }) => {
       .min(6, ({ min }) => `Password must be at least ${min} characters`)
       .required('Please enter password'),
   });
-
   const initialValues = {
-    noteTitle: data?.title ? data?.title : '',
-    noteInfo: data?.noteData ? data?.noteData : '',
+    noteTitle: data?.noteTitle ? data?.noteTitle : '',
+    noteInfo: data?.noteInfo ? data?.noteInfo : '',
   };
-  const handleFormSubmit = (val) => {
-    console.log(val);
+  const handleFormSubmit = (data) => {
+    const payload = {
+      noteTitle: data?.noteTitle,
+      noteInfo: data?.noteInfo,
+      id: storeDocId ? storeDocId : undefined,
+    };
+    dispatch(
+      handleNote(payload, (res) => {
+        setStoreDocId(res?.id);
+        console.log(res?.message);
+      }),
+    );
   };
+  useEffect(() => {
+    setStoreDocId(data?.id);
+  }, [navigation]);
+
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
       <Formik

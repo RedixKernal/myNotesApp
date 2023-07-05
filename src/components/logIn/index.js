@@ -28,7 +28,7 @@ const LoginActivity = ({ navigation }) => {
   };
 
   const setuserData = async (res, info) => {
-    console.log('fun call');
+    console.log(res, 'fun call', info);
     try {
       const jsonInfo = JSON.stringify(info);
       const jsonValue = JSON.stringify(res?.userCredential);

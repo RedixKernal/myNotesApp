@@ -103,6 +103,11 @@ export const createUser = (userData, callBack) => {
           },
         };
         setDoc(doc(store, 'users', userCredential?.user?.uid), obj);
+        setDoc(doc(store, 'notes', userCredential?.user?.uid), {
+          allNotes: [],
+          allFav: [],
+          allTrash: [],
+        });
         callBack({
           type: 'success',
           message: 'Account created successfully',
@@ -179,6 +184,7 @@ export const updateUserProfile = (data, callBack) => {
           emailVerified: user?.emailVerified,
           isAnonymous: user?.isAnonymous,
           uid: user?.uid,
+          ...user?.metadata,
         },
       },
     };
@@ -227,6 +233,7 @@ export const delUser = (callBack) => {
     await deleteUser(user)
       .then(() => {
         deleteDoc(doc(store, 'users', user?.uid));
+        deleteDoc(doc(store, 'notes', user?.uid));
         callBack({
           type: 'success',
           message: 'Account deleted successfully',
