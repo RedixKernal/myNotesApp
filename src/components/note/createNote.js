@@ -55,6 +55,7 @@ const CreateNoteActivity = ({ navigation }) => {
     };
     dispatch(
       handleNote(payload, (res) => {
+        console.log(res?.id);
         setStoreDocId(res?.id);
         console.log(res?.message);
       }),
