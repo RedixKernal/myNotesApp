@@ -11,6 +11,9 @@ function BackHeader({
   leftAction = () => {
     return null;
   },
+  goToBack = () => {
+    return null;
+  },
 }) {
   const { userDetails } = useContext(OAuth);
   return (
@@ -23,7 +26,11 @@ function BackHeader({
             </View>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            onPress={() => {
+              goToBack();
+            }}
+          >
             <View style={styles.menu}>
               <AntDesign name="back" size={24} color="blue" />
             </View>

@@ -132,7 +132,13 @@ const EditProfileActivity = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.dashboardMainContainer}>
       <View style={styles.headerView}>
-        <BackHeader navigation={navigation} activityText="Edit Profile" />
+        <BackHeader
+          navigation={navigation}
+          goToBack={() => {
+            navigation.goBack();
+          }}
+          activityText="Edit Profile"
+        />
       </View>
       {loadingData ? (
         <Text>Loading...</Text>

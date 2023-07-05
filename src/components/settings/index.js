@@ -32,7 +32,13 @@ const SettingActivity = ({ navigation }) => {
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
       <View style={Styles.headerView}>
-        <BackHeader navigation={navigation} activityText="Settings" />
+        <BackHeader
+          navigation={navigation}
+          goToBack={() => {
+            navigation.goBack();
+          }}
+          activityText="Settings"
+        />
       </View>
       <SafeAreaView style={Styles.safeAreaViewContainer}>
         <View style={Styles.securityCheckUpMainContainer}>

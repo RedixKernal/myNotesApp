@@ -31,6 +31,10 @@ const CreateNoteActivity = ({ navigation }) => {
   const dispatch = useDispatch();
   const { secureImgData } = useSelector(({ secureImg }) => secureImg);
   const [storeDocId, setStoreDocId] = useState('');
+  const [initialValues, setInitialValues] = useState({
+    noteTitle: '',
+    noteInfo: '',
+  });
   const validationSchema = yup.object().shape({
     userName: yup.string().required('Please enter user name'),
     password: yup
@@ -39,10 +43,10 @@ const CreateNoteActivity = ({ navigation }) => {
       .required('Please enter password'),
   });
 
-  const initialValues = {
-    noteTitle: '',
-    noteInfo: '',
-  };
+  // const initialValues = {
+  //   noteTitle: '',
+  //   noteInfo: '',
+  // };
   const handleFormSubmit = (data) => {
     const payload = {
       noteTitle: data?.noteTitle,
@@ -56,6 +60,16 @@ const CreateNoteActivity = ({ navigation }) => {
       }),
     );
   };
+
+  const resetValues = () => {
+    console.log('calledd');
+    setInitialValues({
+      noteTitle: '',
+      noteInfo: '',
+    });
+    setStoreDocId('');
+  };
+  console.log(initialValues, storeDocId);
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
       <Formik
@@ -64,11 +78,16 @@ const CreateNoteActivity = ({ navigation }) => {
         // validationSchema={validationSchema}
         onSubmit={(values) => handleFormSubmit(values)}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+        {({ handleChange, handleBlur, handleSubmit, values, errors, resetForm }) => (
           <>
             <View style={Styles.headerView}>
               <BackHeader
                 navigation={navigation}
+                goToBack={() => {
+                  resetValues();
+                  resetForm();
+                  navigation.goBack();
+                }}
                 activityText="Note"
                 leftAction={() => {
                   return (

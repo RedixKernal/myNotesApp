@@ -30,6 +30,7 @@ const EditNoteActivity = ({ route, navigation }) => {
   const { data } = route?.params;
   const dispatch = useDispatch();
   const [storeDocId, setStoreDocId] = useState('');
+  const [isFavFlag, setIsFavFlag] = useState(false);
   const { secureImgData } = useSelector(({ secureImg }) => secureImg);
   const validationSchema = yup.object().shape({
     userName: yup.string().required('Please enter user name'),
@@ -47,6 +48,7 @@ const EditNoteActivity = ({ route, navigation }) => {
       noteTitle: data?.noteTitle,
       noteInfo: data?.noteInfo,
       id: storeDocId ? storeDocId : undefined,
+      isFav: isFavFlag ? isFavFlag : false,
     };
     dispatch(
       handleNote(payload, (res) => {
@@ -57,6 +59,7 @@ const EditNoteActivity = ({ route, navigation }) => {
   };
   useEffect(() => {
     setStoreDocId(data?.id);
+    setIsFavFlag(data.isFav);
   }, [navigation]);
 
   return (
@@ -72,6 +75,9 @@ const EditNoteActivity = ({ route, navigation }) => {
             <View style={Styles.headerView}>
               <BackHeader
                 navigation={navigation}
+                goToBack={() => {
+                  navigation.goBack();
+                }}
                 activityText="Note"
                 leftAction={() => {
                   return (

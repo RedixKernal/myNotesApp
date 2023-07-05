@@ -48,6 +48,14 @@ export default NotesReducer.reducer;
 
 const { fetchStart, getNotesData, fetchError } = NotesReducer.actions;
 
+const getUniqueId = () => {
+  const value = '123456780';
+  let uniqueId = '';
+  for (let i = 0; i <= 8; i++) {
+    uniqueId += value[Math.floor(Math.random() * value.length)];
+  }
+  return uniqueId;
+};
 export const handleNote = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
@@ -58,9 +66,9 @@ export const handleNote = (data, callBack) => {
     console.log(data);
     if (docSnap.exists()) {
       const allNotesData = docSnap.data()?.allNotes;
-      if (data?.id) {
+      if (data?.id && data?.isFav) {
         console.log(data, 'iff');
-        const newData = docSnap.data()?.allNotes;
+        const newData = docSnap.data()?.allFav;
         const modifiedData = newData?.map((each) => {
           if (each?.id === data?.id) {
             return {
@@ -73,7 +81,7 @@ export const handleNote = (data, callBack) => {
           }
         });
         await updateDoc(doc(store, 'notes', user?.uid), {
-          allNotes: modifiedData,
+          allFav: modifiedData,
         })
           .then(() => {
             dispatch(handlegetAllNote());
@@ -91,31 +99,64 @@ export const handleNote = (data, callBack) => {
             });
           });
       } else {
-        // console.log(data, 'elese');
-        const uniqueId = allNotesData[allNotesData?.length - 1]?.id + 1;
-        const obj = {
-          ...data,
-          id: uniqueId ? uniqueId : 1,
-        };
-
-        await updateDoc(doc(store, 'notes', user?.uid), {
-          allNotes: arrayUnion(obj),
-        })
-          .then(() => {
-            dispatch(handlegetAllNote());
-            callBack({
-              type: 'success',
-              message: 'Note created successfully',
-              id: uniqueId,
-            });
-          })
-          .catch((e) => {
-            callBack({
-              type: 'error',
-              message: 'Somthing went worng',
-              id: uniqueId,
-            });
+        if (data?.id) {
+          console.log(data, 'iff');
+          const newData = docSnap.data()?.allNotes;
+          const modifiedData = newData?.map((each) => {
+            if (each?.id === data?.id) {
+              return {
+                id: each?.id,
+                noteInfo: data?.noteInfo,
+                noteTitle: data?.noteTitle,
+              };
+            } else {
+              return each;
+            }
           });
+          await updateDoc(doc(store, 'notes', user?.uid), {
+            allNotes: modifiedData,
+          })
+            .then(() => {
+              dispatch(handlegetAllNote());
+              callBack({
+                type: 'success',
+                message: 'Note updated successfully',
+                id: data?.id,
+              });
+            })
+            .catch((e) => {
+              callBack({
+                type: 'error',
+                message: 'Somthing went worng',
+                id: length,
+              });
+            });
+        } else {
+          // console.log(data, 'elese');
+          const obj = {
+            ...data,
+            id: Number(getUniqueId()),
+          };
+
+          await updateDoc(doc(store, 'notes', user?.uid), {
+            allNotes: arrayUnion(obj),
+          })
+            .then(() => {
+              dispatch(handlegetAllNote());
+              callBack({
+                type: 'success',
+                message: 'Note created successfully',
+                id: uniqueId,
+              });
+            })
+            .catch((e) => {
+              callBack({
+                type: 'error',
+                message: 'Somthing went worng',
+                id: uniqueId,
+              });
+            });
+        }
       }
     } else {
       // docSnap.data() will be undefined in this case
@@ -130,6 +171,7 @@ export const handlegetAllNote = () => {
     const auth = getAuth();
     const user = auth.currentUser;
     const docRef = doc(store, 'notes', user?.uid);
+    console.log('getnotes');
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       dispatch(getNotesData(docSnap.data()));
