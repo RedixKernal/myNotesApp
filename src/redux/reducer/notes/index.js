@@ -133,9 +133,10 @@ export const handleNote = (data, callBack) => {
             });
         } else {
           // console.log(data, 'elese');
+          const uniqueId = Number(getUniqueId());
           const obj = {
             ...data,
-            id: Number(getUniqueId()),
+            id: uniqueId,
           };
 
           await updateDoc(doc(store, 'notes', user?.uid), {
