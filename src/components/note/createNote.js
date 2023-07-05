@@ -23,11 +23,14 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { handleNote } from '../../redux/reducer/notes';
 const CreateNoteActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
 
   const dispatch = useDispatch();
   const { secureImgData } = useSelector(({ secureImg }) => secureImg);
+  const [storeDocId, setStoreDocId] = useState('');
   const validationSchema = yup.object().shape({
     userName: yup.string().required('Please enter user name'),
     password: yup
@@ -40,8 +43,18 @@ const CreateNoteActivity = ({ navigation }) => {
     noteTitle: '',
     noteInfo: '',
   };
-  const handleFormSubmit = (val) => {
-    console.log(val);
+  const handleFormSubmit = (data) => {
+    const payload = {
+      noteTitle: data?.noteTitle,
+      noteInfo: data?.noteInfo,
+      id: storeDocId ? storeDocId : undefined,
+    };
+    dispatch(
+      handleNote(payload, (res) => {
+        setStoreDocId(res?.id);
+        console.log(res?.message);
+      }),
+    );
   };
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>

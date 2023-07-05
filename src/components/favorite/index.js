@@ -18,82 +18,81 @@ import { getSecureImg } from '../../redux/reducer/secureImg/index';
 import { useDispatch, useSelector } from 'react-redux';
 import GridView from '../../utils/GridView';
 import Styles from './styles';
+import {
+  handleAddToAllNotesFromFavNotes,
+  handleAddToTrashFromFavNotes,
+} from '../../redux/reducer/notes/index';
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 const FavoriteActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
-  const { secureImgData } = useSelector(({ secureImg }) => secureImg);
-  const notesData = [
-    {
-      id: 1,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 2,
-      title: 'My_Note2',
-      noteData: '2this is my new data for testing the result',
-    },
-    {
-      id: 3,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 4,
-      title: 'My_Note2',
-      noteData:
-        '2this is my new data for testing the result this is my new data for this is my new data for testing the resulthis is my new data for testing the resulthis is my new data for testing the resul testing the resul this is my new data for testing the resul',
-    },
-    {
-      id: 5,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 6,
-      title: 'My_Note2',
-      noteData: '2this is my new data for testing the result',
-    },
-    {
-      id: 7,
-      title: 'My_Note2',
-      noteData: '2this is my new data for testing the result',
-    },
-    {
-      id: 8,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 9,
-      title: 'My_Note2',
-      noteData:
-        '2this is my new data for testing the result this is my new data for this is my new data for testing the resulthis is my new data for testing the resulthis is my new data for testing the resul testing the resul this is my new data for testing the resul',
-    },
-    {
-      id: 10,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 66,
-      title: 'My_Note2',
-      noteData:
-        '2this is my new data hjhnj nhjj nhhjjh nhjj nhjuhnj nhjuhn nhju njhj bjbjbhhgj bgjh nbjh bmngjh bjhgj bjkhjjh bjjh  for testing the result',
-    },
-  ];
+  const { data } = useSelector(({ notes }) => notes);
+  const [notesAllData, setNotesAllData] = useState([]);
+
+  const handleGetNoteData = (data) => {
+    console.log(data);
+    navigation.navigate('Edit', {
+      data: data,
+    });
+  };
+
+  const handleUnFavorite = (data) => {
+    dispatch(handleAddToAllNotesFromFavNotes(data));
+  };
+  const handleDelete = (data) => {
+    dispatch(handleAddToTrashFromFavNotes(data));
+  };
+
+  useEffect(() => {
+    setNotesAllData(data?.allFav);
+  }, [data]);
+
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
       <View style={Styles.headerView}>
         <BackHeader navigation={navigation} sideMenu={true} activityText="Favorite" />
       </View>
-      <GridView
-        data={notesData}
-        actionText={'View'}
-        actionStyles={{
-          backgroundColor: '#ea9d23ff',
-        }}
-      />
+      <ScrollView>
+        <SafeAreaView style={Styles?.gridContainer}>
+          {notesAllData &&
+            notesAllData?.length > 0 &&
+            notesAllData?.map((item) => {
+              return (
+                <GridView
+                  data={item}
+                  key={item?.id}
+                  actionText={'View'}
+                  actionStyles={{
+                    backgroundColor: '#eeca00',
+                  }}
+                  handleGetNoteData={handleGetNoteData}
+                  actions={(val) => {
+                    return (
+                      <>
+                        {/* <TouchableOpacity >
+                          <FontAwesome name="star-o" size={20} color="#edc900" />
+                        </TouchableOpacity > */}
+                        <TouchableOpacity onPress={() => handleUnFavorite(val)}>
+                          <FontAwesome name="star" size={20} color="#edc900" />
+                        </TouchableOpacity>
+                        {/*  <TouchableOpacity>
+                          <MaterialCommunityIcons name="file-restore" size={20} color="green" />
+                        </TouchableOpacity> */}
+                        <TouchableOpacity onPress={() => handleDelete(val)}>
+                          <MaterialIcons name="delete" size={20} color="red" />
+                        </TouchableOpacity>
+                      </>
+                    );
+                  }}
+                />
+              );
+            })}
+        </SafeAreaView>
+      </ScrollView>
     </SafeAreaView>
   );
 };

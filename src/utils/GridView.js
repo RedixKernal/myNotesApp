@@ -19,75 +19,71 @@ const GridView = ({
   data,
   actionText,
   actionStyles,
+  actions = () => {
+    return null;
+  },
   handleGetNoteData = () => {
     return null;
   },
 }) => {
   return (
-    <ScrollView>
-      <SafeAreaView style={GridStyles?.gridContainer}>
-        {data &&
-          data?.length > 0 &&
-          data?.map((each) => {
-            return (
-              <View key={each?.id} style={GridStyles.cardContainer}>
-                <View
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    backgroundColor: '#f3f4f6ff',
-                    paddingHorizontal: 4,
-                  }}
-                >
-                  <Text style={GridStyles.title}>{each?.title}</Text>
-                  <View
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    <TouchableOpacity>
-                      <FontAwesome name="star-o" size={24} color="#edc900" />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <FontAwesome name="star" size={24} color="#edc900" />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <MaterialCommunityIcons name="file-restore" size={20} color="green" />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <MaterialIcons name="delete" size={20} color="red" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+    <View key={data?.id} style={GridStyles.cardContainer}>
+      <View
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexDirection: 'row',
+          backgroundColor: '#f3f4f6ff',
+          paddingHorizontal: 4,
+        }}
+      >
+        <Text style={GridStyles.title}>{data?.noteTitle}</Text>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}
+        >
+          {actions(data)}
+          {/*
+           <TouchableOpacity>
+            <FontAwesome name="star-o" size={24} color="#edc900" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesome name="star" size={24} color="#edc900" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MaterialCommunityIcons name="file-restore" size={20} color="green" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MaterialIcons name="delete" size={20} color="red" />
+          </TouchableOpacity> 
+          */}
+        </View>
+      </View>
 
-                <View>
-                  <Text style={GridStyles.noteData} numberOfLines={4}>
-                    {each?.noteData}
-                  </Text>
-                </View>
+      <View>
+        <Text style={GridStyles.noteData} numberOfLines={4}>
+          {data?.noteInfo}
+        </Text>
+      </View>
 
-                <View style={{ width: '100%' }}>
-                  <TouchableOpacity
-                    style={GridStyles.TouchableButton}
-                    onPress={() => {
-                      handleGetNoteData(each);
-                    }}
-                  >
-                    <Text style={{ ...GridStyles.viewStyles, ...actionStyles }}>
-                      {actionText ? actionText : 'View'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          })}
-      </SafeAreaView>
-    </ScrollView>
+      <View style={{ width: '100%' }}>
+        <TouchableOpacity
+          style={GridStyles.TouchableButton}
+          onPress={() => {
+            handleGetNoteData(data);
+          }}
+        >
+          <Text style={{ ...GridStyles.viewStyles, ...actionStyles }}>
+            {actionText ? actionText : 'View'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 export default GridView;

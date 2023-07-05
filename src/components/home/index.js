@@ -19,84 +19,47 @@ import GridView from '../../utils/GridView';
 import Styles from './styles';
 import ToastMessage from '../../utils/ToastMessage';
 import DialogBax from '../../utils/DialogBox';
+import {
+  handleAddToFavoriteFromAllNotes,
+  handleAddToTrashFromAllNotes,
+} from '../../redux/reducer/notes/index';
+
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 const HomeActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
-  const { secureImgData } = useSelector(({ secureImg }) => secureImg);
+  const { data } = useSelector(({ notes }) => notes);
   const [loader, setIsloader] = useState(false);
   const [dialogBox, setDialogBox] = useState(true);
-  // {
-  //     singleIMG:val
-  //    }
-  const notesData = [
-    {
-      id: 1,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 2,
-      title: 'My_Note2',
-      noteData: '2this is my new data for testing the result',
-    },
-    {
-      id: 3,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 4,
-      title: 'My_Note2',
-      noteData:
-        '2this is my new data for testing the result this is my new data for this is my new data for testing the resulthis is my new data for testing the resulthis is my new data for testing the resul testing the resul this is my new data for testing the resul',
-    },
-    {
-      id: 5,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 6,
-      title: 'My_Note2',
-      noteData: '2this is my new data for testing the result',
-    },
-    {
-      id: 7,
-      title: 'My_Note2',
-      noteData: '2this is my new data for testing the result',
-    },
-    {
-      id: 8,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 9,
-      title: 'My_Note2',
-      noteData:
-        '2this is my new data for testing the result this is my new data for this is my new data for testing the resulthis is my new data for testing the resulthis is my new data for testing the resul testing the resul this is my new data for testing the resul',
-    },
-    {
-      id: 10,
-      title: 'My_Note',
-      noteData: 'this is my new data for testing the result',
-    },
-    {
-      id: 66,
-      title: 'My_Note2',
-      noteData:
-        '2this is my new data hjhnj nhjj nhhjjh nhjj nhjuhnj nhjuhn nhju njhj bjbjbhhgj bgjh nbjh bmngjh bjhgj bjkhjjh bjjh  for testing the result',
-    },
-  ];
+
+  const [notesAllData, setNotesAllData] = useState([]);
+
   const handleGetNoteData = (data) => {
     console.log(data);
     navigation.navigate('Edit', {
       data: data,
     });
   };
+
+  const handleFavorite = (data) => {
+    dispatch(handleAddToFavoriteFromAllNotes(data));
+  };
+  const handleDelete = (data) => {
+    dispatch(handleAddToTrashFromAllNotes(data));
+  };
+
+  useEffect(() => {
+    setNotesAllData(data?.allNotes);
+    console.log('log here', data);
+  }, [data]);
+
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
-      {loader && (
+      {/* {loader && (
         <ToastMessage message="Error Message" type="error" onClose={() => setIsloader(false)} />
       )}
       {dialogBox && (
@@ -105,11 +68,44 @@ const HomeActivity = ({ navigation }) => {
           onClose={() => setDialogBox(false)}
           onClick={() => setIsloader(true)}
         />
-      )}
+      )} */}
       <View style={Styles.headerView}>
         <Header navigation={navigation} />
       </View>
-      <GridView data={notesData} actionText={'Views'} handleGetNoteData={handleGetNoteData} />
+      <ScrollView>
+        <SafeAreaView style={Styles?.gridContainer}>
+          {notesAllData &&
+            notesAllData?.length > 0 &&
+            notesAllData?.map((item) => {
+              return (
+                <GridView
+                  data={item}
+                  key={item?.id}
+                  actionText={'View'}
+                  handleGetNoteData={handleGetNoteData}
+                  actions={(val) => {
+                    return (
+                      <>
+                        <TouchableOpacity onPress={() => handleFavorite(val)}>
+                          <FontAwesome name="star-o" size={20} color="#edc900" />
+                        </TouchableOpacity>
+                        {/* <TouchableOpacity>
+                          <FontAwesome name="star" size={20} color="#edc900" />
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                          <MaterialCommunityIcons name="file-restore" size={20} color="green" />
+                        </TouchableOpacity> */}
+                        <TouchableOpacity onPress={() => handleDelete(val)}>
+                          <MaterialIcons name="delete" size={20} color="red" />
+                        </TouchableOpacity>
+                      </>
+                    );
+                  }}
+                />
+              );
+            })}
+        </SafeAreaView>
+      </ScrollView>
     </SafeAreaView>
   );
 };

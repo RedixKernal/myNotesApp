@@ -28,7 +28,7 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 const ProfileActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
-  const { secureImgData } = useSelector(({ secureImg }) => secureImg);
+  const { data } = useSelector(({ notes }) => notes);
   const [loadingData, setLoadingdata] = useState(true);
   const [userData, setUserData] = useState({});
   const { getItem } = useAsyncStorage('@providerData');
@@ -86,10 +86,8 @@ const ProfileActivity = ({ navigation }) => {
                   ? `${userData?.meta?.name?.split(' ')[0]?.charAt(0)?.toUpperCase() ?? ''}${
                       userData?.meta?.name?.split(' ')[1]?.charAt(0)?.toUpperCase() ?? ''
                     }`
-                  : 'Redix Kernal'}
+                  : '--'}
               </Text>
-              {/* <MaterialCommunityIcons name="shield-check" size={32} color="green" /> */}
-              {/* <MaterialCommunityIcons name="shield-alert" size={32} color="red" /> */}
             </View>
           </View>
           <View style={Styles.infoViewContainer}>
@@ -97,10 +95,10 @@ const ProfileActivity = ({ navigation }) => {
             {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
 
             <Text style={Styles.profileText}>
-              {userData?.meta?.name ? userData?.meta?.name : 'Redix Kernal'}
+              {userData?.meta?.name ? userData?.meta?.name : '--'}
             </Text>
             <Text style={Styles.profileMailText}>
-              {userData?.meta?.email ? userData?.meta?.email : 'RedixKernal@rdx.com'}
+              {userData?.meta?.email ? userData?.meta?.email : '--'}
             </Text>
           </View>
 
@@ -109,7 +107,7 @@ const ProfileActivity = ({ navigation }) => {
             {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
 
             <View style={Styles.allConutContainer}>
-              <Text style={Styles.allConut}>56</Text>
+              <Text style={Styles.allConut}>{data?.allNotes?.length ?? 0}</Text>
               <Text style={Styles.countLabelText}>All</Text>
             </View>
 
@@ -119,12 +117,12 @@ const ProfileActivity = ({ navigation }) => {
                 ...Styles.middleCounterContainer,
               }}
             >
-              <Text style={Styles.allConut}>12</Text>
+              <Text style={Styles.allConut}>{data?.allFav?.length ?? 0}</Text>
               <Text style={Styles.countLabelText}>Favorite</Text>
             </View>
 
             <View style={Styles.allConutContainer}>
-              <Text style={Styles.allConut}>06</Text>
+              <Text style={Styles.allConut}>{data?.allTrash?.length ?? 0}</Text>
               <Text style={Styles.countLabelText}>Trash</Text>
             </View>
           </View>
@@ -139,31 +137,31 @@ const ProfileActivity = ({ navigation }) => {
                 <View style={Styles.labelTextContainer}>
                   <Text style={Styles.leftLabelText}>Mobile</Text>
                   <Text style={Styles.rightLabelText}>
-                    {userData?.meta?.mobile ? userData?.meta?.mobile : '+91 7032491730'}
+                    {userData?.meta?.mobile ? userData?.meta?.mobile : '--'}
                   </Text>
                 </View>
               </View>
             </View>
             <View style={Styles.listItemContainer}>
               <View style={Styles.listItemContentContainer}>
-                <Ionicons name="time" size={24} color="#2560ff" />
+                <Ionicons name="time" size={20} color="#2560ff" />
 
                 <View style={Styles.labelTextContainer}>
                   <Text style={Styles.leftLabelText}>State</Text>
                   <Text style={Styles.rightLabelText}>
-                    {userData?.meta?.state ? userData?.meta?.state : 'Telangana'}
+                    {userData?.meta?.state ? userData?.meta?.state : '--'}
                   </Text>
                 </View>
               </View>
             </View>
             <View style={Styles.listItemContainer}>
               <View style={Styles.listItemContentContainer}>
-                <MaterialIcons name="info" size={24} color="#2560ff" />
+                <MaterialIcons name="info" size={20} color="#2560ff" />
 
                 <View style={Styles.labelTextContainer}>
                   <Text style={Styles.leftLabelText}>Country</Text>
                   <Text style={Styles.rightLabelText}>
-                    {userData?.meta?.country ? userData?.meta?.country : 'India'}
+                    {userData?.meta?.country ? userData?.meta?.country : '--'}
                   </Text>
                 </View>
               </View>

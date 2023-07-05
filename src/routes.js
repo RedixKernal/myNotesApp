@@ -14,13 +14,15 @@ import { useEffect } from 'react';
 import { getAuth } from 'firebase/auth';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import { handlegetAllNote } from './redux/reducer/notes/index';
+import { useDispatch, useSelector } from 'react-redux';
 const Route = createNativeStackNavigator();
 
 const AppRoutes = () => {
   const { isLogedIn } = useContext(OAuth);
   const [value, setValue] = useState('value');
   const { getItem } = useAsyncStorage('@current_user');
-
+  const dispatch = useDispatch();
   const readItemFromStorage = async () => {
     const item = await getItem();
     setValue(item);
@@ -29,7 +31,9 @@ const AppRoutes = () => {
   useEffect(() => {
     readItemFromStorage();
   }, [isLogedIn]);
-
+  useEffect(() => {
+    dispatch(handlegetAllNote());
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
