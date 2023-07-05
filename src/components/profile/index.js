@@ -51,6 +51,9 @@ const ProfileActivity = ({ navigation }) => {
         <BackHeader
           navigation={navigation}
           activityText="Profile"
+          goToBack={() => {
+            navigation.goBack();
+          }}
           leftAction={() => {
             return (
               <TouchableOpacity

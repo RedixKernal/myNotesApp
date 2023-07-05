@@ -36,7 +36,7 @@ const FavoriteActivity = ({ navigation }) => {
   const handleGetNoteData = (data) => {
     console.log(data);
     navigation.navigate('Edit', {
-      data: data,
+      data: { ...data, isFav: true },
     });
   };
 

@@ -42,7 +42,13 @@ const UpdatePasswordActivity = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.dashboardMainContainer}>
       <View style={styles.headerView}>
-        <BackHeader navigation={navigation} activityText="Update Password" />
+        <BackHeader
+          navigation={navigation}
+          goToBack={() => {
+            navigation.goBack();
+          }}
+          activityText="Update Password"
+        />
       </View>
       <SafeAreaView
         style={{
