@@ -27,12 +27,16 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import ToastMessage from '../../utils/ToastMessage';
+import DialogBax from '../../utils/DialogBox';
+import { Entypo } from '@expo/vector-icons';
 const FavoriteActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
   const { data } = useSelector(({ notes }) => notes);
   const [notesAllData, setNotesAllData] = useState([]);
-
+  const [isLoader, setIsloader] = useState(false);
+  const [toast, setToast] = useState({});
   const handleGetNoteData = (data) => {
     console.log(data);
     navigation.navigate('Edit', {
@@ -41,10 +45,26 @@ const FavoriteActivity = ({ navigation }) => {
   };
 
   const handleUnFavorite = (data) => {
-    dispatch(handleAddToAllNotesFromFavNotes(data));
+    dispatch(
+      handleAddToAllNotesFromFavNotes(data, (res) => {
+        setToast(res);
+        setIsloader(true);
+        setTimeout(() => {
+          setIsloader(false);
+        }, 3000);
+      }),
+    );
   };
   const handleDelete = (data) => {
-    dispatch(handleAddToTrashFromFavNotes(data));
+    dispatch(
+      handleAddToTrashFromFavNotes(data, (res) => {
+        setToast(res);
+        setIsloader(true);
+        setTimeout(() => {
+          setIsloader(false);
+        }, 3000);
+      }),
+    );
   };
 
   useEffect(() => {
@@ -53,13 +73,19 @@ const FavoriteActivity = ({ navigation }) => {
 
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
+      {isLoader && (
+        <ToastMessage
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setIsloader(false)}
+        />
+      )}
       <View style={Styles.headerView}>
         <BackHeader navigation={navigation} sideMenu={true} activityText="Favorite" />
       </View>
       <ScrollView>
         <SafeAreaView style={Styles?.gridContainer}>
-          {notesAllData &&
-            notesAllData?.length > 0 &&
+          {notesAllData && notesAllData?.length > 0 ? (
             notesAllData?.map((item) => {
               return (
                 <GridView
@@ -90,7 +116,23 @@ const FavoriteActivity = ({ navigation }) => {
                   }}
                 />
               );
-            })}
+            })
+          ) : (
+            <View
+              style={{
+                // borderWidth: 2,
+                // borderColor: 'red',
+                width: '100%',
+                // height: '100%',
+                marginVertical: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Entypo name="emoji-sad" size={40} color="#edc90040" />
+              <Text>No Favorite Notes</Text>
+            </View>
+          )}
         </SafeAreaView>
       </ScrollView>
     </SafeAreaView>

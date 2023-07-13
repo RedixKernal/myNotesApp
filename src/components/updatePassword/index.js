@@ -20,9 +20,17 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { updateUserPassword } from '../../redux/reducer/OAuth/index';
+import * as Yup from 'yup';
+
 const UpdatePasswordActivity = ({ navigation }) => {
   const dispatch = useDispatch();
-
+  const validationSchema = Yup.object({
+    oldPassword: Yup.string().required('Password is required'),
+    password: Yup.string().required('Password is required').min(6),
+    confirmPassword: Yup.string()
+      .required('Confirm password is required')
+      .oneOf([Yup.ref('password'), null], 'Confirm password must match'),
+  });
   const initialValues = {
     oldPassword: '',
     password: '',
@@ -30,6 +38,7 @@ const UpdatePasswordActivity = ({ navigation }) => {
   };
   const handleUpdatePassword = (val) => {
     const payload = {
+      oldPassword: val?.oldPassword,
       password: val.password,
     };
     dispatch(
@@ -63,7 +72,7 @@ const UpdatePasswordActivity = ({ navigation }) => {
           <Formik
             enableReintialize="true"
             initialValues={initialValues}
-            // validationSchema={validationSchema}
+            validationSchema={validationSchema}
             onSubmit={(values) => handleUpdatePassword(values)}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (

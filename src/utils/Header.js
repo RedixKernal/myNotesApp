@@ -4,7 +4,7 @@ import { Icons } from '../assets/Icons/index';
 import { OAuth } from '../auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-function Header({ navigation }) {
+function Header({ navigation, activityText }) {
   const { userDetails } = useContext(OAuth);
   return (
     <View style={styles.headerContainer}>
@@ -13,7 +13,7 @@ function Header({ navigation }) {
           <MaterialCommunityIcons name="menu-open" size={26} color="blue" />
         </View>
       </TouchableOpacity>
-
+      <Text>{activityText}</Text>
       <View style={styles.menu}>
         <TouchableOpacity
           onPress={() => {

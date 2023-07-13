@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -11,11 +11,15 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { signInUser, getUserDetails } from '../../redux/reducer/OAuth/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ToastMessage from '../../utils/ToastMessage';
+import DialogBax from '../../utils/DialogBox';
 const LoginActivity = ({ navigation }) => {
   const dispatch = useDispatch();
   const { handleSigninUser } = useContext(OAuth);
+  const [isLoader, setIsloader] = useState(false);
+  const [toast, setToast] = useState({});
   const validationSchema = yup.object().shape({
-    userName: yup.string().required('Please enter user name'),
+    email: yup.string().required('Please enter user name'),
     password: yup
       .string()
       .min(6, ({ min }) => `Password must be at least ${min} characters`)
@@ -23,19 +27,18 @@ const LoginActivity = ({ navigation }) => {
   });
 
   const initialValues = {
+    // email: '',
+    // password: '',
     email: 'admin@gmail.com',
-    password: 'admin@18',
+    password: 'admin@123',
   };
 
   const setuserData = async (res, info) => {
-    console.log(res, 'fun call', info);
     try {
       const jsonInfo = JSON.stringify(info);
       const jsonValue = JSON.stringify(res?.userCredential);
       await AsyncStorage.setItem('@current_user', jsonValue);
       await AsyncStorage.setItem('@providerData', jsonInfo);
-
-      console.log('hhh');
       handleSigninUser(res);
     } catch (e) {
       console.log(e);
@@ -48,10 +51,15 @@ const LoginActivity = ({ navigation }) => {
     };
     dispatch(
       signInUser(payload, (data) => {
-        console.log(data);
+        if (data) {
+          setToast(data);
+          setIsloader(true);
+        }
+        setTimeout(() => {
+          setIsloader(false);
+        }, 3000);
         dispatch(
           getUserDetails((res) => {
-            console.log(res);
             setuserData(data, res.data);
           }),
         );
@@ -61,6 +69,14 @@ const LoginActivity = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+      {isLoader && (
+        <ToastMessage
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setIsloader(false)}
+        />
+      )}
+
       <ScrollView>
         <SafeAreaView style={styles.main}>
           <View style={styles.profileImageStyles}>
@@ -73,7 +89,7 @@ const LoginActivity = ({ navigation }) => {
           <Formik
             enableReintialize="true"
             initialValues={initialValues}
-            // validationSchema={validationSchema}
+            validationSchema={validationSchema}
             onSubmit={(values) => handleFormSubmit(values)}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (

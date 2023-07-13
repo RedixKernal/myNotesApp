@@ -46,14 +46,10 @@ export default ToastMessage;
 const styles = StyleSheet.create({
   tosat_Container_Overly: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     zIndex: 10,
-    backgroundColor: '#00000034',
+    // backgroundColor: '#fff',
     width: '100%',
-    height: '100%',
+    // height: '100%',
   },
   tosat_Container: {
     display: 'flex',

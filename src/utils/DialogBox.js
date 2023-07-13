@@ -10,22 +10,32 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-function DialogBax({ message, onClose = () => null, onClick = () => null }) {
+function DialogBax({
+  message = null,
+  onClose = () => null,
+  onClick = () => null,
+  closeBtnText,
+  conformBtnText,
+}) {
   return (
     <SafeAreaView style={styles.tosat_Container_Overly}>
       <View style={styles.tosat_Container}>
         <View style={{ ...styles.tosat_MsgViewr }}>
-          <View>
-            <Text style={styles.messageTitle} numberOfLines={4}>
-              {message ? message : '-...'}
-            </Text>
+          <View
+            style={{
+              width: '100%',
+              paddingHorizontal: 10,
+            }}
+          >
+            {message}
+            {/* <Text numberOfLines={4}>{message ? message : '-...'}</Text> */}
           </View>
           <View style={styles.actionContainer}>
             <TouchableOpacity onPress={() => onClose()} style={styles.cancelActionButton}>
-              <Text style={{ color: 'white' }}>Cancel</Text>
+              <Text style={{ color: 'white' }}>{closeBtnText ? closeBtnText : 'Cancel'}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => onClick()} style={styles.conformActionButton}>
-              <Text style={{ color: 'black' }}>Conform</Text>
+              <Text style={{ color: 'black' }}>{conformBtnText ? conformBtnText : 'Conform'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -77,7 +87,7 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     // borderWidth:1,
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
     width: '100%',
     display: 'flex',
     justifyContent: 'flex-end',
