@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  TextInput,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
@@ -24,13 +25,85 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import { signOutUser, delUser } from '../../redux/reducer/OAuth/index';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ToastMessage from '../../utils/ToastMessage';
+import DialogBax from '../../utils/DialogBox';
 const SettingActivity = ({ navigation }) => {
-  const { userDetails } = useContext(OAuth);
+  const { handleSignoutUser, userDetails, deleteUserData } = useContext(OAuth);
   const dispatch = useDispatch();
-  const { secureImgData } = useSelector(({ secureImg }) => secureImg);
+  const [isLoader, setIsloader] = useState(false);
+  const [toast, setToast] = useState({});
+  const [dialogBox, setDialogBox] = useState(false);
+  const [password, setPassword] = useState();
+  const removeuserData = async (res) => {
+    try {
+      await AsyncStorage.removeItem('@current_user');
+      setDialogBox(false);
+      handleSignoutUser(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleDeleteUser = () => {
+    const payload = {
+      password: password,
+    };
+    dispatch(
+      delUser(payload, (data) => {
+        removeuserData(data);
+      }),
+    );
+  };
+
+  const handleDeleteDialog = () => {
+    setPassword('');
+    setDialogBox(true);
+  };
 
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
+      {dialogBox && (
+        <DialogBax
+          conformBtnText={'Verify'}
+          message={
+            <View>
+              <Text
+                style={{
+                  fontSize: 16,
+                  marginVertical: 8,
+                  marginHorizontal: 4,
+                }}
+              >
+                Verify Account
+              </Text>
+              <TextInput
+                // style={styles.inputField}
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#dedede',
+                  borderRadius: 6,
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+
+                  // width: '80%',
+                }}
+                onChangeText={(val) => {
+                  setPassword(val);
+                }}
+                onBlur={(val) => {
+                  setPassword(val);
+                }}
+                value={password}
+                placeholder="Enter Password"
+              />
+            </View>
+          }
+          onClose={() => setDialogBox(false)}
+          onClick={() => handleDeleteUser()}
+        />
+      )}
       <View style={Styles.headerView}>
         <BackHeader
           navigation={navigation}
@@ -86,126 +159,30 @@ const SettingActivity = ({ navigation }) => {
           </View>
         </SafeAreaView>
 
-        {/* <Text style={{
-                marginTop:10,
-                fontWeight:'bold',
-                    fontSize:15,
-                    // backgroundColor:'#c1bebe66',
-                    color:'#bbbbbb',
-                    fontFamily:'Poppins',
-                    textAlign:'left',
-                }}>Enable Privacy</Text>
-
-            <SafeAreaView style={{
-                paddingTop:10,
-                paddingBottom:20,
-                borderBottomWidth:1,
-                borderColor:'#c2c2c2',
-
-            }}>
-                <View style={{
-                    width:'100%',
-                    height:50,
-                    // borderWidth:2,
-                    display:'flex',
-                    alignItems:'center',
-                    flexDirection:'row',
-                    justifyContent:'space-between'
-                }}>
-                    <View style={{
-                        display:'flex',
-                        alignItems:'center',
-                        flexDirection:'row',
-                    }}>
-                <MaterialCommunityIcons name="shield-alert-outline" size={30} color="green" />
-
-                     <Text style={{
-                        fontSize:16,
-                        fontFamily:'Poppins',
-                        marginLeft:10,
-                        fontWeight:'bold',
-                    }}>Enable Privacy Lock</Text>
-                    </View>
-                    
-                    <TouchableOpacity style={{
-                        // borderWidth:1,
-                        padding:4,
-                        paddingLeft:15,
-                        paddingRight:15,
-                        borderRadius:5,
-                        // borderColor:'#2560ff'
-                    }}>
-                    <Entypo name="switch" size={30} color="blue" />
-                    </TouchableOpacity>
-                </View>
-                
-            </SafeAreaView> */}
-
-        {/* <Text  style={{
-                marginTop:10,
-                fontWeight:'bold',
-                color:'#bbbbbb',
-                    fontSize:15,
-                    // backgroundColor:'#c1bebe66',
-                    fontFamily:'Poppins',
-                    textAlign:'left',
-                    // borderTopWidth:2,
-                    // borderTopColor:'#c1c1c1'
-                }}>Updates</Text>
-
-            <SafeAreaView style={{
-                paddingTop:10,
-                paddingBottom:10,
-                borderBottomWidth:1,
-                borderColor:'#c2c2c2',
-
-            }}>
-                
-
-                <View style={{
-                    width:'100%',
-                    height:50,
-                    // borderWidth:2,
-                    display:'flex',
-                    alignItems:'center',
-                    flexDirection:'row',
-                    justifyContent:'space-between'
-                }}>
-                <View style={{
-                        display:'flex',
-                        alignItems:'center',
-                        flexDirection:'row',
-                    }}>
-                <Ionicons name="checkmark-circle-outline" size={30} color="green" />
-                <Text style={{
-                    marginLeft:10,
-                    color:'green',
-                    fontSize:15,
-                    fontFamily:'Poppins',
-                }}>Updated 10d ago</Text>
-                </View>
-                
-                <TouchableOpacity style={{
-                        // borderWidth:1,
-                        padding:6,
-                        paddingLeft:10,
-                        paddingRight:10,
-                        borderRadius:5,
-                        backgroundColor:'red',
-                        color:'#fff',
-
-                    }}>
-                <Text style={{
-                    color:'#fff',
-                    fontSize:14,
-                    fontFamily:'Poppins',
-                }}>change</Text>
-                </TouchableOpacity>
-                    
-                </View>
-
-                
-            </SafeAreaView> */}
+        <TouchableOpacity onPress={handleDeleteDialog}>
+          <SafeAreaView
+            style={{
+              marginVertical: 40,
+              borderWidth: 1,
+              borderColor: '#dedede',
+              borderRadius: 8,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#db0e29',
+            }}
+          >
+            <View style={Styles.sideDrawerOptionalMenuItemContainer}>
+              <MaterialCommunityIcons
+                name="account-remove"
+                size={24}
+                color="#fff"
+                style={{ marginHorizontal: 6 }}
+              />
+              <Text style={Styles.sideDrawerDeleteAccountText}>Delete account</Text>
+            </View>
+          </SafeAreaView>
+        </TouchableOpacity>
       </SafeAreaView>
     </SafeAreaView>
   );

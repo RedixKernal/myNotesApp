@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { OAuth } from '../auth';
 function SideDraWer(props) {
-  const { handleSignoutUser, userDetails } = useContext(OAuth);
+  const { handleSignoutUser, userDetails, setDeleteUserData, deleteUserData } = useContext(OAuth);
   const dispatch = useDispatch();
   const [loadingData, setLoadingdata] = useState(false);
   const [userData, setUserData] = useState({});
@@ -41,13 +41,14 @@ function SideDraWer(props) {
       }),
     );
   };
-  const handleDeleteUser = () => {
-    dispatch(
-      delUser((data) => {
-        removeuserData(data);
-      }),
-    );
-  };
+  // const handleDeleteUser = () => {
+  //   setDeleteUserData(!deleteUserData);
+  //   // dispatch(
+  //   //   delUser((data) => {
+  //   //     removeuserData(data);
+  //   //   }),
+  //   // );
+  // };
 
   return (
     <View style={{ flex: 1 }}>
@@ -94,7 +95,7 @@ function SideDraWer(props) {
         </View>
       </DrawerContentScrollView>
       <View style={styles.sideDrawerOptionalMenuContainer}>
-        <TouchableOpacity onPress={handleDeleteUser}>
+        {/* <TouchableOpacity onPress={handleDeleteUser}>
           <View style={styles.sideDrawerOptionalMenuItemContainer}>
             <MaterialCommunityIcons
               name="account-remove"
@@ -104,7 +105,7 @@ function SideDraWer(props) {
             />
             <Text style={styles.sideDrawerDeleteAccountText}>Delete account</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity onPress={handleSignOut}>
           <View style={styles.sideDrawerOptionalMenuItemContainer}>
             <FontAwesome name="sign-out" size={24} color="gray" style={{ marginHorizontal: 10 }} />

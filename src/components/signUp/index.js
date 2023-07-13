@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
 import { Formik } from 'formik';
 import styles from './styles';
@@ -10,10 +10,22 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
-
+import ToastMessage from '../../utils/ToastMessage';
+import DialogBax from '../../utils/DialogBox';
+import * as Yup from 'yup';
 const SignUpActivity = ({ navigation }) => {
   const dispatch = useDispatch();
 
+  const [isLoader, setIsloader] = useState(false);
+  const [toast, setToast] = useState({});
+  const validationSchema = Yup.object({
+    userName: Yup.string().required('User name is required'),
+    email: Yup.string().required('Email is required'),
+    password: Yup.string().required('Password is required').min(6),
+    confirmPassword: Yup.string()
+      .required('Confirm password is required')
+      .oneOf([Yup.ref('password'), null], 'Confirm password must match'),
+  });
   const initialValues = {
     userName: '',
     password: '',
@@ -28,14 +40,28 @@ const SignUpActivity = ({ navigation }) => {
     };
     dispatch(
       createUser(payload, (res) => {
-        console.log(res?.message);
-        navigation.navigate('LoginActivity');
+        // console.log(res?.message);
+        if (res) {
+          setToast(res);
+          setIsloader(true);
+        }
+        setTimeout(() => {
+          setIsloader(false);
+          res.type !== 'error' && navigation.navigate('LoginActivity');
+        }, 3000);
       }),
     );
   };
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+      {isLoader && (
+        <ToastMessage
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setIsloader(false)}
+        />
+      )}
       <ScrollView>
         <SafeAreaView style={styles.main}>
           <View style={styles.profileImageStyles}>
@@ -44,7 +70,7 @@ const SignUpActivity = ({ navigation }) => {
           <Formik
             enableReintialize="true"
             initialValues={initialValues}
-            // validationSchema={validationSchema}
+            validationSchema={validationSchema}
             onSubmit={(values) => handleCreateUser(values)}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (

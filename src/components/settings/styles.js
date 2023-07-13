@@ -105,5 +105,17 @@ const Styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: '#2560ff',
   },
+  sideDrawerOptionalMenuItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 2,
+    paddingVertical: 10,
+  },
+  sideDrawerDeleteAccountText: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 16,
+    marginHorizontal: 4,
+  },
 });
 export default Styles;

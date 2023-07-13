@@ -110,7 +110,11 @@ const ProfileActivity = ({ navigation }) => {
             {/* <Ionicons name="shield-checkmark-sharp" size={32} color="green" /> */}
 
             <View style={Styles.allConutContainer}>
-              <Text style={Styles.allConut}>{data?.allNotes?.length ?? 0}</Text>
+              <Text style={Styles.allConut}>
+                {!isNaN(data?.allNotes?.length + data?.allFav?.length + data?.allTrash?.length)
+                  ? data?.allNotes?.length + data?.allFav?.length + data?.allTrash?.length
+                  : 0}
+              </Text>
               <Text style={Styles.countLabelText}>All</Text>
             </View>
 

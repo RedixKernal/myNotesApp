@@ -67,7 +67,6 @@ export const handleNote = (data, callBack) => {
     if (docSnap.exists()) {
       const allNotesData = docSnap.data()?.allNotes;
       if (data?.id && data?.isFav) {
-        console.log(data, 'iff');
         const newData = docSnap.data()?.allFav;
         const modifiedData = newData?.map((each) => {
           if (each?.id === data?.id) {
@@ -198,6 +197,10 @@ export const handleAddToFavoriteFromAllNotes = (data, callBack) => {
         await updateDoc(doc(store, 'notes', user?.uid), {
           allNotes: arrayRemove(data),
         }).then(() => {
+          callBack({
+            type: 'success',
+            message: 'Added To Favorite',
+          });
           dispatch(handlegetAllNote());
         });
       });
@@ -223,6 +226,10 @@ export const handleAddToTrashFromAllNotes = (data, callBack) => {
         await updateDoc(doc(store, 'notes', user?.uid), {
           allNotes: arrayRemove(data),
         }).then(() => {
+          callBack({
+            type: 'success',
+            message: 'Added To Trash',
+          });
           dispatch(handlegetAllNote());
         });
       });
@@ -248,6 +255,10 @@ export const handleAddToAllNotesFromFavNotes = (data, callBack) => {
         await updateDoc(doc(store, 'notes', user?.uid), {
           allFav: arrayRemove(data),
         }).then(() => {
+          callBack({
+            type: 'success',
+            message: 'Note UnFavorited',
+          });
           dispatch(handlegetAllNote());
         });
       });
@@ -273,6 +284,10 @@ export const handleAddToTrashFromFavNotes = (data, callBack) => {
         await updateDoc(doc(store, 'notes', user?.uid), {
           allFav: arrayRemove(data),
         }).then(() => {
+          callBack({
+            type: 'success',
+            message: 'Added To Trash',
+          });
           dispatch(handlegetAllNote());
         });
       });
@@ -298,6 +313,10 @@ export const handleRestoreFromTrash = (data, callBack) => {
         await updateDoc(doc(store, 'notes', user?.uid), {
           allTrash: arrayRemove(data),
         }).then(() => {
+          callBack({
+            type: 'success',
+            message: 'Note Restored',
+          });
           dispatch(handlegetAllNote());
         });
       });
@@ -320,6 +339,10 @@ export const handleDeleteFromTrash = (data, callBack) => {
       await updateDoc(doc(store, 'notes', user?.uid), {
         allTrash: arrayRemove(data),
       }).then(async () => {
+        callBack({
+          type: 'success',
+          message: 'Note Permanently Deleted',
+        });
         dispatch(handlegetAllNote());
       });
     } else {
@@ -329,7 +352,7 @@ export const handleDeleteFromTrash = (data, callBack) => {
   };
 };
 
-export const handleDeleteAllFromTrash = (data, callBack) => {
+export const handleDeleteAllFromTrash = (callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
     const auth = getAuth();
@@ -341,6 +364,10 @@ export const handleDeleteAllFromTrash = (data, callBack) => {
       await updateDoc(doc(store, 'notes', user?.uid), {
         allTrash: [],
       }).then(async () => {
+        callBack({
+          type: 'success',
+          message: 'All Notes Permanently Deleted',
+        });
         dispatch(handlegetAllNote());
       });
     } else {

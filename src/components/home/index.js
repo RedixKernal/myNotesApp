@@ -22,6 +22,7 @@ import DialogBax from '../../utils/DialogBox';
 import {
   handleAddToFavoriteFromAllNotes,
   handleAddToTrashFromAllNotes,
+  handlegetAllNote,
 } from '../../redux/reducer/notes/index';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -29,11 +30,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 const HomeActivity = ({ navigation }) => {
   const { userDetails } = useContext(OAuth);
   const dispatch = useDispatch();
   const { data } = useSelector(({ notes }) => notes);
-  const [loader, setIsloader] = useState(false);
+  const [isLoader, setIsloader] = useState(false);
+  const [toast, setToast] = useState({});
   const [dialogBox, setDialogBox] = useState(true);
 
   const [notesAllData, setNotesAllData] = useState([]);
@@ -46,23 +49,45 @@ const HomeActivity = ({ navigation }) => {
   };
 
   const handleFavorite = (data) => {
-    dispatch(handleAddToFavoriteFromAllNotes(data));
+    dispatch(
+      handleAddToFavoriteFromAllNotes(data, (res) => {
+        setToast(res);
+        setIsloader(true);
+        setTimeout(() => {
+          setIsloader(false);
+        }, 3000);
+      }),
+    );
   };
   const handleDelete = (data) => {
-    dispatch(handleAddToTrashFromAllNotes(data));
+    dispatch(
+      handleAddToTrashFromAllNotes(data, (res) => {
+        setToast(res);
+        setIsloader(true);
+        setTimeout(() => {
+          setIsloader(false);
+        }, 3000);
+      }),
+    );
   };
 
   useEffect(() => {
     setNotesAllData(data?.allNotes);
-    console.log('log here', data);
   }, [data]);
+  useEffect(() => {
+    dispatch(handlegetAllNote());
+  }, []);
 
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
-      {/* {loader && (
-        <ToastMessage message="Error Message" type="error" onClose={() => setIsloader(false)} />
+      {isLoader && (
+        <ToastMessage
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setIsloader(false)}
+        />
       )}
-      {dialogBox && (
+      {/* {dialogBox && (
         <DialogBax
           message="are you sure want to delete file / asset"
           onClose={() => setDialogBox(false)}
@@ -70,12 +95,11 @@ const HomeActivity = ({ navigation }) => {
         />
       )} */}
       <View style={Styles.headerView}>
-        <Header navigation={navigation} />
+        <Header navigation={navigation} activityText={'Home'} />
       </View>
       <ScrollView>
         <SafeAreaView style={Styles?.gridContainer}>
-          {notesAllData &&
-            notesAllData?.length > 0 &&
+          {notesAllData && notesAllData?.length > 0 ? (
             notesAllData?.map((item) => {
               return (
                 <GridView
@@ -103,7 +127,23 @@ const HomeActivity = ({ navigation }) => {
                   }}
                 />
               );
-            })}
+            })
+          ) : (
+            <View
+              style={{
+                // borderWidth: 2,
+                // borderColor: 'red',
+                width: '100%',
+                // height: '100%',
+                marginVertical: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Entypo name="emoji-sad" size={40} color="#0300d740" />
+              <Text>No Notes</Text>
+            </View>
+          )}
         </SafeAreaView>
       </ScrollView>
     </SafeAreaView>

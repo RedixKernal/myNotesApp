@@ -27,9 +27,17 @@ import { Fontisto } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import ToastMessage from '../../utils/ToastMessage';
+import DialogBax from '../../utils/DialogBox';
+import * as Yup from 'yup';
 const EditProfileActivity = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState('');
   const [loadingData, setLoadingdata] = useState(true);
+  const [isLoader, setIsloader] = useState(false);
+  const [toast, setToast] = useState({});
+  const validationSchema = Yup.object({
+    name: Yup.string().required('User name is required'),
+  });
   const [initialValues, setinitialValues] = useState({
     name: '',
     country: '',
@@ -117,6 +125,11 @@ const EditProfileActivity = ({ navigation }) => {
     dispatch(
       updateUserProfile(payload, (res) => {
         // console.log(res?.message);
+        setToast(res);
+        setIsloader(true);
+        setTimeout(() => {
+          setIsloader(false);
+        }, 3000);
         dispatch(
           getUserDetails((res) => {
             // console.log(res.data);
@@ -131,6 +144,13 @@ const EditProfileActivity = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.dashboardMainContainer}>
+      {isLoader && (
+        <ToastMessage
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setIsloader(false)}
+        />
+      )}
       <View style={styles.headerView}>
         <BackHeader
           navigation={navigation}
@@ -148,7 +168,7 @@ const EditProfileActivity = ({ navigation }) => {
             <Formik
               enableReintialize="true"
               initialValues={initialValues}
-              // validationSchema={validationSchema}
+              validationSchema={validationSchema}
               onSubmit={(values) => handleCreateUser(values)}
             >
               {({ handleChange, handleBlur, handleSubmit, values, errors }) => (

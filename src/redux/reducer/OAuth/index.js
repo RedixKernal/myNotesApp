@@ -209,12 +209,22 @@ export const updateUserPassword = (data, callBack) => {
     dispatch(fetchStart());
     const auth = getAuth();
     const user = auth.currentUser;
-    await updatePassword(user, data?.password)
-      .then(() => {
-        callBack({
-          type: 'success',
-          message: 'Password updated successfully',
-        });
+    console.log(user?.email, 'user update');
+    await signInWithEmailAndPassword(auth, user?.email, data?.oldPassword)
+      .then((userCredential) => {
+        updatePassword(user, data?.password)
+          .then(() => {
+            callBack({
+              type: 'success',
+              message: 'Password updated successfully',
+            });
+          })
+          .catch((error) => {
+            callBack({
+              type: 'error',
+              message: error.message,
+            });
+          });
       })
       .catch((error) => {
         callBack({
@@ -225,19 +235,28 @@ export const updateUserPassword = (data, callBack) => {
   };
 };
 
-export const delUser = (callBack) => {
+export const delUser = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
     const auth = getAuth();
     const user = auth.currentUser;
-    await deleteUser(user)
-      .then(() => {
-        deleteDoc(doc(store, 'users', user?.uid));
-        deleteDoc(doc(store, 'notes', user?.uid));
-        callBack({
-          type: 'success',
-          message: 'Account deleted successfully',
-        });
+    await signInWithEmailAndPassword(auth, user?.email, data?.password)
+      .then((userCredential) => {
+        deleteUser(user)
+          .then(() => {
+            deleteDoc(doc(store, 'users', user?.uid));
+            deleteDoc(doc(store, 'notes', user?.uid));
+            callBack({
+              type: 'success',
+              message: 'Account deleted successfully',
+            });
+          })
+          .catch((error) => {
+            callBack({
+              type: 'error',
+              message: error.message,
+            });
+          });
       })
       .catch((error) => {
         callBack({
