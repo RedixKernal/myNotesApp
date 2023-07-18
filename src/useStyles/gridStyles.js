@@ -59,5 +59,20 @@ const GridStyles = StyleSheet.create({
     color: '#fff',
     borderRadius: 4,
   },
+  content_container_grid: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#f3f4f6ff',
+    paddingHorizontal: 4,
+  },
+  action_content: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  fullWidth: { width: '100%' },
 });
 export default GridStyles;

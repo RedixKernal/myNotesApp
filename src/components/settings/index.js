@@ -160,24 +160,13 @@ const SettingActivity = ({ navigation }) => {
         </SafeAreaView>
 
         <TouchableOpacity onPress={handleDeleteDialog}>
-          <SafeAreaView
-            style={{
-              marginVertical: 40,
-              borderWidth: 1,
-              borderColor: '#dedede',
-              borderRadius: 8,
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: '#db0e29',
-            }}
-          >
+          <SafeAreaView style={Styles.dialog_text}>
             <View style={Styles.sideDrawerOptionalMenuItemContainer}>
               <MaterialCommunityIcons
                 name="account-remove"
                 size={24}
                 color="#fff"
-                style={{ marginHorizontal: 6 }}
+                style={Styles.margin_hor}
               />
               <Text style={Styles.sideDrawerDeleteAccountText}>Delete account</Text>
             </View>

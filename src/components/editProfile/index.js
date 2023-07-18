@@ -215,7 +215,7 @@ const EditProfileActivity = ({ navigation }) => {
                           <Text style={styles.formFieldLabelText}>Mobile</Text>
                         </View>
                         <View style={styles.formFieldInput}>
-                          <FontAwesome5 name="mobile-alt" size={24} color="#1E64DDFF" />
+                          <MaterialCommunityIcons name="information" size={24} color="#2560ff" />
                           <TextInput
                             style={styles.inputField}
                             onChangeText={handleChange('mobile')}
@@ -234,11 +234,8 @@ const EditProfileActivity = ({ navigation }) => {
                           <Text style={styles.formFieldLabelText}>State</Text>
                         </View>
                         <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
-                          <MaterialCommunityIcons
-                            name="clock-time-three"
-                            size={24}
-                            color="#2560ff"
-                          />
+                          <MaterialCommunityIcons name="information" size={24} color="#2560ff" />
+                          {/* <MaterialCommunityIcons name="information" size={24} color="black" /> */}
                           <TextInput
                             style={styles.inputField}
                             onChangeText={handleChange('state')}
@@ -257,7 +254,7 @@ const EditProfileActivity = ({ navigation }) => {
                           <Text style={styles.formFieldLabelText}>Country</Text>
                         </View>
                         <View style={styles.formFieldInput}>
-                          <Ionicons name="flag" size={24} color="#2560ff" />
+                          <MaterialCommunityIcons name="information" size={24} color="#2560ff" />
                           <TextInput
                             style={styles.inputField}
                             onChangeText={handleChange('country')}

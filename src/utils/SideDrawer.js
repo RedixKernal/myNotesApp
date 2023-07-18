@@ -71,7 +71,7 @@ function SideDraWer(props) {
                     ? `${userData?.meta?.name?.split(' ')[0]?.charAt(0)?.toUpperCase() ?? ''}${
                         userData?.meta?.name?.split(' ')[1]?.charAt(0)?.toUpperCase() ?? ''
                       }`
-                    : 'Redix Kernal'}
+                    : '- -'}
                   {/* {userDetails?.userName.charAt(0).toUpperCase()} */}
                   {/* RK */}
                 </Text>
@@ -79,12 +79,12 @@ function SideDraWer(props) {
             )}
             <View style={styles.sideDrawerUserNameContainer}>
               <Text style={styles.sideDrawerUserNameText}>
-                {userData?.meta?.name ? userData?.meta?.name : 'Redix Kernal'}
+                {userData?.meta?.name ? userData?.meta?.name : '--'}
                 {/* {userDetails?.userName} */}
                 {/* Redix */}
               </Text>
               <Text>
-                {userData?.meta?.email ? userData?.meta?.email : 'RedixKernal@rdx.com'}
+                {userData?.meta?.email ? userData?.meta?.email : '--'}
                 {/* RedixInfo@gmail.com */}
               </Text>
             </View>

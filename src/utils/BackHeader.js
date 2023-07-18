@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
-import { Icons } from '../assets/Icons/index';
 import { OAuth } from '../auth';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

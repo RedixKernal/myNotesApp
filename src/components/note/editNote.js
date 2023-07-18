@@ -31,14 +31,6 @@ const EditNoteActivity = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const [storeDocId, setStoreDocId] = useState('');
   const [isFavFlag, setIsFavFlag] = useState(false);
-  const { secureImgData } = useSelector(({ secureImg }) => secureImg);
-  const validationSchema = yup.object().shape({
-    userName: yup.string().required('Please enter user name'),
-    password: yup
-      .string()
-      .min(6, ({ min }) => `Password must be at least ${min} characters`)
-      .required('Please enter password'),
-  });
   const initialValues = {
     noteTitle: data?.noteTitle ? data?.noteTitle : '',
     noteInfo: data?.noteInfo ? data?.noteInfo : '',
@@ -65,10 +57,9 @@ const EditNoteActivity = ({ route, navigation }) => {
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
       <Formik
-        enableReintialize="true"
         initialValues={initialValues}
-        // validationSchema={validationSchema}
         onSubmit={(values) => handleFormSubmit(values)}
+        enableReintialize={true}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
           <>

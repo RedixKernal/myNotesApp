@@ -137,17 +137,7 @@ const TrashActivity = ({ navigation }) => {
               );
             })
           ) : (
-            <View
-              style={{
-                // borderWidth: 2,
-                // borderColor: 'red',
-                width: '100%',
-                // height: '100%',
-                marginVertical: '80%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <View style={Styles.no_record_found}>
               <Entypo name="emoji-sad" size={40} color="#db023240" />
               <Text>No Trashed Notes</Text>
             </View>

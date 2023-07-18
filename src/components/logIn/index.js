@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { signInUser, getUserDetails } from '../../redux/reducer/OAuth/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ToastMessage from '../../utils/ToastMessage';
-import DialogBax from '../../utils/DialogBox';
+import { MaterialIcons } from '@expo/vector-icons';
 const LoginActivity = ({ navigation }) => {
   const dispatch = useDispatch();
   const { handleSigninUser } = useContext(OAuth);
@@ -27,8 +27,6 @@ const LoginActivity = ({ navigation }) => {
   });
 
   const initialValues = {
-    // email: '',
-    // password: '',
     email: 'admin@gmail.com',
     password: 'admin@123',
   };
@@ -99,7 +97,8 @@ const LoginActivity = ({ navigation }) => {
                     <Text style={styles.formFieldLabelText}>Email</Text>
                   </View>
                   <View style={styles.formFieldInput}>
-                    <Ionicons name="person-circle-outline" size={26} color="#1E64DDFF" />
+                    {/* <Ionicons name="person-circle-outline" size={26} color="#1E64DDFF" /> */}
+                    <MaterialIcons name="mail" size={24} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
                       onChangeText={handleChange('email')}
@@ -118,11 +117,12 @@ const LoginActivity = ({ navigation }) => {
                     <Text style={styles.formFieldLabelText}>Password</Text>
                   </View>
                   <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
-                    <MaterialCommunityIcons
+                    {/* <MaterialCommunityIcons
                       name="form-textbox-password"
                       size={26}
                       color="#1E64DDFF"
-                    />
+                    /> */}
+                    <MaterialIcons name="lock" size={24} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
                       onChangeText={handleChange('password')}

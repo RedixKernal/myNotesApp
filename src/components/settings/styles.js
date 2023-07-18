@@ -117,5 +117,16 @@ const Styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 4,
   },
+  dialog_text: {
+    marginVertical: 40,
+    borderWidth: 1,
+    borderColor: '#dedede',
+    borderRadius: 8,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#db0e29',
+  },
+  margin_hor: { marginHorizontal: 6 },
 });
 export default Styles;

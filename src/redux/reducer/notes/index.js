@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { httpGET } from '../../API/index';
 import firebase from 'firebase/app';
 import {
   collection,

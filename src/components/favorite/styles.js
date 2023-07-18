@@ -22,5 +22,14 @@ const Styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
+  fav_no_found: {
+    // borderWidth: 2,
+    // borderColor: 'red',
+    width: '100%',
+    // height: '100%',
+    marginVertical: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 export default Styles;
