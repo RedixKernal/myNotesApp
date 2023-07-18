@@ -8,7 +8,6 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 function DialogBax({
   message = null,
@@ -21,21 +20,13 @@ function DialogBax({
     <SafeAreaView style={styles.tosat_Container_Overly}>
       <View style={styles.tosat_Container}>
         <View style={{ ...styles.tosat_MsgViewr }}>
-          <View
-            style={{
-              width: '100%',
-              paddingHorizontal: 10,
-            }}
-          >
-            {message}
-            {/* <Text numberOfLines={4}>{message ? message : '-...'}</Text> */}
-          </View>
+          <View style={styles.textWidth}>{message}</View>
           <View style={styles.actionContainer}>
             <TouchableOpacity onPress={() => onClose()} style={styles.cancelActionButton}>
-              <Text style={{ color: 'white' }}>{closeBtnText ? closeBtnText : 'Cancel'}</Text>
+              <Text style={styles.color_white}>{closeBtnText ? closeBtnText : 'Cancel'}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => onClick()} style={styles.conformActionButton}>
-              <Text style={{ color: 'black' }}>{conformBtnText ? conformBtnText : 'Conform'}</Text>
+              <Text style={styles.color_black}>{conformBtnText ? conformBtnText : 'Conform'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -114,5 +105,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     fontFamily: 'Poppins',
     backgroundColor: '#f1f1f1',
+  },
+
+  textWidth: {
+    width: '100%',
+    paddingHorizontal: 10,
+  },
+  color_white: {
+    color: 'white',
+  },
+  color_black: {
+    color: 'black',
   },
 });

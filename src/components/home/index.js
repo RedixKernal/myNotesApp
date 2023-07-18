@@ -129,17 +129,7 @@ const HomeActivity = ({ navigation }) => {
               );
             })
           ) : (
-            <View
-              style={{
-                // borderWidth: 2,
-                // borderColor: 'red',
-                width: '100%',
-                // height: '100%',
-                marginVertical: '80%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <View style={Styles.fav_no_found}>
               <Entypo name="emoji-sad" size={40} color="#0300d740" />
               <Text>No Notes</Text>
             </View>

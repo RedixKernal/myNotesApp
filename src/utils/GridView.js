@@ -28,41 +28,9 @@ const GridView = ({
 }) => {
   return (
     <View key={data?.id} style={GridStyles.cardContainer}>
-      <View
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexDirection: 'row',
-          backgroundColor: '#f3f4f6ff',
-          paddingHorizontal: 4,
-        }}
-      >
+      <View style={GridStyles.content_container_grid}>
         <Text style={GridStyles.title}>{data?.noteTitle}</Text>
-        <View
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}
-        >
-          {actions(data)}
-          {/*
-           <TouchableOpacity>
-            <FontAwesome name="star-o" size={24} color="#edc900" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <FontAwesome name="star" size={24} color="#edc900" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialCommunityIcons name="file-restore" size={20} color="green" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialIcons name="delete" size={20} color="red" />
-          </TouchableOpacity> 
-          */}
-        </View>
+        <View style={GridStyles.action_content}>{actions(data)}</View>
       </View>
 
       <View>
@@ -71,7 +39,7 @@ const GridView = ({
         </Text>
       </View>
 
-      <View style={{ width: '100%' }}>
+      <View style={GridStyles.fullWidth}>
         <TouchableOpacity
           style={GridStyles.TouchableButton}
           onPress={() => {

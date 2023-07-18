@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 6,
     padding: 2,
-    marginVertical: 10,
+    marginVertical: 2,
   },
   formFieldLabel: {
     width: '100%',
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 14,
     color: '#DB4437FF',
-    paddingHorizontal: 10,
+    paddingHorizontal: 2,
     width: '90%',
   },
 });

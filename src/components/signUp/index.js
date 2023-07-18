@@ -8,11 +8,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
 import ToastMessage from '../../utils/ToastMessage';
-import DialogBax from '../../utils/DialogBox';
 import * as Yup from 'yup';
+import { MaterialIcons } from '@expo/vector-icons';
 const SignUpActivity = ({ navigation }) => {
   const dispatch = useDispatch();
 
@@ -40,7 +38,6 @@ const SignUpActivity = ({ navigation }) => {
     };
     dispatch(
       createUser(payload, (res) => {
-        // console.log(res?.message);
         if (res) {
           setToast(res);
           setIsloader(true);
@@ -99,7 +96,7 @@ const SignUpActivity = ({ navigation }) => {
                     <Text style={styles.formFieldLabelText}>Email</Text>
                   </View>
                   <View style={styles.formFieldInput}>
-                    <Entypo name="email" size={24} color="#1E64DDFF" />
+                    <MaterialIcons name="mail" size={23} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
                       onChangeText={handleChange('email')}
@@ -118,7 +115,7 @@ const SignUpActivity = ({ navigation }) => {
                     <Text style={styles.formFieldLabelText}>Password</Text>
                   </View>
                   <View style={styles.formFieldInput}>
-                    <FontAwesome5 name="mobile-alt" size={24} color="#1E64DDFF" />
+                    <MaterialIcons name="lock" size={24} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
                       onChangeText={handleChange('password')}
@@ -137,11 +134,7 @@ const SignUpActivity = ({ navigation }) => {
                     <Text style={styles.formFieldLabelText}>Conform Password</Text>
                   </View>
                   <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
-                    <MaterialCommunityIcons
-                      name="form-textbox-password"
-                      size={26}
-                      color="#1E64DDFF"
-                    />
+                    <MaterialCommunityIcons name="lock-check" size={25} color="#1E64DDFF" />
                     <TextInput
                       style={styles.inputField}
                       onChangeText={handleChange('confirmPassword')}

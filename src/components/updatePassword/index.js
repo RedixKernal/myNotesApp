@@ -21,7 +21,6 @@ import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { updateUserPassword } from '../../redux/reducer/OAuth/index';
 import * as Yup from 'yup';
-
 const UpdatePasswordActivity = ({ navigation }) => {
   const dispatch = useDispatch();
   const validationSchema = Yup.object({
@@ -83,7 +82,9 @@ const UpdatePasswordActivity = ({ navigation }) => {
                       <Text style={styles.formFieldLabelText}>Old Password</Text>
                     </View>
                     <View style={styles.formFieldInput}>
-                      <MaterialCommunityIcons name="security" size={24} color="#2560ff" />
+                      {/* <MaterialCommunityIcons name="security" size={24} color="#2560ff" /> */}
+                      {/* <MaterialCommunityIcons name="onepassword" size={24} color="#2560ff" /> */}
+                      <Ionicons name="warning" size={24} color="#BD0232" />
                       <TextInput
                         style={styles.inputField}
                         onChangeText={handleChange('oldPassword')}
@@ -104,7 +105,8 @@ const UpdatePasswordActivity = ({ navigation }) => {
                       <Text style={styles.formFieldLabelText}>New Password</Text>
                     </View>
                     <View style={styles.formFieldInput}>
-                      <MaterialIcons name="privacy-tip" size={24} color="#2560ff" />
+                      {/* <MaterialIcons name="privacy-tip" size={24} color="#2560ff" /> */}
+                      <MaterialIcons name="lock" size={24} color="#1E64DDFF" />
                       <TextInput
                         style={styles.inputField}
                         onChangeText={handleChange('password')}
@@ -123,7 +125,8 @@ const UpdatePasswordActivity = ({ navigation }) => {
                       <Text style={styles.formFieldLabelText}>Conform Password</Text>
                     </View>
                     <View style={[styles.formFieldInput, { borderRadius: 6 }]}>
-                      <Ionicons name="checkmark-circle" size={24} color="#2560ff" />
+                      {/* <Ionicons name="checkmark-circle" size={24} color="#2560ff" /> */}
+                      <MaterialCommunityIcons name="lock-check" size={25} color="#1E64DDFF" />
                       <TextInput
                         style={styles.inputField}
                         onChangeText={handleChange('confirmPassword')}

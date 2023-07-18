@@ -60,7 +60,7 @@ const Styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 6,
     padding: 2,
-    marginVertical: 6,
+    marginVertical: 2,
   },
   formFieldLabel: {
     width: '100%',

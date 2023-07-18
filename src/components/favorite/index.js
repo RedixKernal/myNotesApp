@@ -118,17 +118,7 @@ const FavoriteActivity = ({ navigation }) => {
               );
             })
           ) : (
-            <View
-              style={{
-                // borderWidth: 2,
-                // borderColor: 'red',
-                width: '100%',
-                // height: '100%',
-                marginVertical: '80%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <View style={Styles.fav_no_found}>
               <Entypo name="emoji-sad" size={40} color="#edc90040" />
               <Text>No Favorite Notes</Text>
             </View>

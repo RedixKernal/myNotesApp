@@ -35,21 +35,10 @@ const CreateNoteActivity = ({ navigation }) => {
     noteTitle: '',
     noteInfo: '',
   });
-  const validationSchema = yup.object().shape({
-    userName: yup.string().required('Please enter user name'),
-    password: yup
-      .string()
-      .min(6, ({ min }) => `Password must be at least ${min} characters`)
-      .required('Please enter password'),
-  });
 
-  // const initialValues = {
-  //   noteTitle: '',
-  //   noteInfo: '',
-  // };
   const handleFormSubmit = (data) => {
     const payload = {
-      noteTitle: data?.noteTitle,
+      noteTitle: data?.noteTitle ?? 'UnTitled Note',
       noteInfo: data?.noteInfo,
       id: storeDocId ? storeDocId : undefined,
     };
@@ -74,12 +63,11 @@ const CreateNoteActivity = ({ navigation }) => {
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>
       <Formik
-        enableReintialize="true"
         initialValues={initialValues}
-        // validationSchema={validationSchema}
         onSubmit={(values) => handleFormSubmit(values)}
+        enableReintialize={true}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, resetForm }) => (
+        {({ handleChange, handleBlur, handleSubmit, values, resetForm }) => (
           <>
             <View style={Styles.headerView}>
               <BackHeader
