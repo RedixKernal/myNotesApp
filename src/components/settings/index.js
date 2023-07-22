@@ -29,6 +29,7 @@ import { signOutUser, delUser } from '../../redux/reducer/OAuth/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ToastMessage from '../../utils/ToastMessage';
 import DialogBax from '../../utils/DialogBox';
+import { setNotesData } from '../../redux/reducer/notes/index';
 const SettingActivity = ({ navigation }) => {
   const { handleSignoutUser, userDetails, deleteUserData } = useContext(OAuth);
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ const SettingActivity = ({ navigation }) => {
   const removeuserData = async (res) => {
     try {
       await AsyncStorage.removeItem('@current_user');
+      await AsyncStorage.removeItem('@notesStoreData');
+      dispatch(setNotesData([]));
       setDialogBox(false);
       handleSignoutUser(res);
     } catch (e) {

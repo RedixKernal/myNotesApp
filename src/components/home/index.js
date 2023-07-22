@@ -38,7 +38,6 @@ const HomeActivity = ({ navigation }) => {
   const [isLoader, setIsloader] = useState(false);
   const [toast, setToast] = useState({});
   const [dialogBox, setDialogBox] = useState(true);
-
   const [notesAllData, setNotesAllData] = useState([]);
 
   const handleGetNoteData = (data) => {
@@ -59,6 +58,7 @@ const HomeActivity = ({ navigation }) => {
       }),
     );
   };
+
   const handleDelete = (data) => {
     dispatch(
       handleAddToTrashFromAllNotes(data, (res) => {
@@ -74,9 +74,6 @@ const HomeActivity = ({ navigation }) => {
   useEffect(() => {
     setNotesAllData(data?.allNotes);
   }, [data]);
-  useEffect(() => {
-    dispatch(handlegetAllNote());
-  }, []);
 
   return (
     <SafeAreaView style={Styles.dashboardMainContainer}>

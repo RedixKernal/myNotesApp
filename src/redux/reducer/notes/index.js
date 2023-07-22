@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore';
 import { store } from '../../../config';
 import { getAuth } from 'firebase/auth';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const initialState = {
   data: [],
   notesIsLoading: false,
@@ -55,6 +55,7 @@ const getUniqueId = () => {
   }
   return uniqueId;
 };
+
 export const handleNote = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
@@ -157,23 +158,6 @@ export const handleNote = (data, callBack) => {
             });
         }
       }
-    } else {
-      // docSnap.data() will be undefined in this case
-      console.log('No such document!');
-    }
-  };
-};
-
-export const handlegetAllNote = () => {
-  return async (dispatch) => {
-    dispatch(fetchStart());
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const docRef = doc(store, 'notes', user?.uid);
-    console.log('getnotes');
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      dispatch(getNotesData(docSnap.data()));
     } else {
       // docSnap.data() will be undefined in this case
       console.log('No such document!');
@@ -373,5 +357,37 @@ export const handleDeleteAllFromTrash = (callBack) => {
       // docSnap.data() will be undefined in this case
       console.log('No such document!');
     }
+  };
+};
+
+const setAllNotesData = async (data) => {
+  try {
+    const jsonInfo = JSON.stringify(data);
+    await AsyncStorage.setItem('@notesStoreData', jsonInfo);
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const handlegetAllNote = (callBack = () => null) => {
+  return async (dispatch) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const docRef = doc(store, 'notes', user?.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log('docSnap.data()', docSnap.data());
+      callBack(docSnap.data());
+      dispatch(getNotesData(docSnap.data()));
+      setAllNotesData(docSnap.data());
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log('No such document!');
+    }
+  };
+};
+
+export const setNotesData = (notesData) => {
+  return async (dispatch) => {
+    dispatch(getNotesData(notesData));
   };
 };

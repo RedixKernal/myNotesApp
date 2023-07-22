@@ -21,8 +21,11 @@ import {
   signOut,
   deleteUser,
   updatePassword,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
 } from 'firebase/auth';
-
+import { setNotesData } from '../notes/index';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const initialState = {
   userData: null,
   isLoading: false,
@@ -69,9 +72,11 @@ export default OauthReducer.reducer;
 const { fetchStart, signinUser, updateUser, signoutUser, deleteCurrentUser, fetchError } =
   OauthReducer.actions;
 
+// createUser method allow to user to create the identity for app
+// by validate their user name and password
+// and return the curent signed in user data
 export const createUser = (userData, callBack) => {
   return async (dispatch) => {
-    dispatch(fetchStart());
     const auth = getAuth();
     await createUserWithEmailAndPassword(
       auth,
@@ -80,7 +85,6 @@ export const createUser = (userData, callBack) => {
       userData?.displayName,
     )
       .then((userCredential) => {
-        console.log(userCredential);
         const obj = {
           userProviderData: {
             userData: {
@@ -111,20 +115,24 @@ export const createUser = (userData, callBack) => {
         callBack({
           type: 'success',
           message: 'Account created successfully',
+          status: 200,
         });
       })
       .catch((error) => {
         callBack({
           type: 'error',
           message: error.message,
+          status: 404,
         });
       });
   };
 };
 
+// signInUser method allow to user to signed into the app
+// by validate their user name and password
+// and return the curent signed in user data
 export const signInUser = (userData, callBack) => {
   return async (dispatch) => {
-    dispatch(fetchStart());
     const auth = getAuth();
     await signInWithEmailAndPassword(auth, userData?.email, userData?.password)
       .then((userCredential) => {
@@ -132,17 +140,22 @@ export const signInUser = (userData, callBack) => {
           type: 'success',
           message: 'SignIn successfully',
           userCredential: userCredential,
+          status: 200,
         });
       })
       .catch((error) => {
         callBack({
           type: 'error',
           message: error.message,
+          status: 404,
         });
       });
   };
 };
 
+// signOutUser method allow to user to signOut from the app
+// by validate their user name and password
+// and return the curent signed in usrer data as null
 export const signOutUser = (callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
@@ -152,17 +165,20 @@ export const signOutUser = (callBack) => {
         callBack({
           type: 'success',
           message: 'SignOut successfully',
+          status: 200,
         });
       })
       .catch((error) => {
         callBack({
           type: 'error',
           message: error.message,
+          status: 404,
         });
       });
   };
 };
 
+// updateUserProfile method allow to user to update or add user info
 export const updateUserProfile = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
@@ -204,6 +220,8 @@ export const updateUserProfile = (data, callBack) => {
   };
 };
 
+// updateUserPassword method allow to user can change the password
+// by validate their old password and update the new password
 export const updateUserPassword = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
@@ -212,6 +230,8 @@ export const updateUserPassword = (data, callBack) => {
     console.log(user?.email, 'user update');
     await signInWithEmailAndPassword(auth, user?.email, data?.oldPassword)
       .then((userCredential) => {
+        const auth = getAuth();
+        const user = auth.currentUser;
         updatePassword(user, data?.password)
           .then(() => {
             callBack({
@@ -235,6 +255,9 @@ export const updateUserPassword = (data, callBack) => {
   };
 };
 
+// delUser method allow to user to delete the account from the app
+// by validate their user name and password
+// and return the curent signed in usrer data as null
 export const delUser = (data, callBack) => {
   return async (dispatch) => {
     dispatch(fetchStart());
@@ -242,6 +265,8 @@ export const delUser = (data, callBack) => {
     const user = auth.currentUser;
     await signInWithEmailAndPassword(auth, user?.email, data?.password)
       .then((userCredential) => {
+        const auth = getAuth();
+        const user = auth.currentUser;
         deleteUser(user)
           .then(() => {
             deleteDoc(doc(store, 'users', user?.uid));
@@ -267,11 +292,28 @@ export const delUser = (data, callBack) => {
   };
 };
 
+// getUserDetails methos is allowed to use to get the details of current logedin user
+// {
+//   userProviderData:{
+//     info:{},
+//     meta:{},
+//     userData:{}
+//   }
+// }
+const setAllNotesData = async (data) => {
+  try {
+    const jsonInfo = JSON.stringify(data);
+    await AsyncStorage.setItem('@notesStoreData', jsonInfo);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const getUserDetails = (callBack) => {
   return async (dispatch) => {
-    dispatch(fetchStart());
     const auth = getAuth();
     const user = auth.currentUser;
+
     const docRef = doc(store, 'users', user?.uid);
     const docSnap = await getDoc(docRef);
 
@@ -285,7 +327,38 @@ export const getUserDetails = (callBack) => {
       callBack({
         type: 'error',
         message: 'Document not found',
+        data: null,
       });
     }
+
+    const docRefN = doc(store, 'notes', user?.uid);
+    const docSnapN = await getDoc(docRefN);
+    if (docSnapN.exists()) {
+      dispatch(setNotesData(docSnapN.data()));
+      setAllNotesData(docSnapN.data());
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log('No such document!');
+    }
+  };
+};
+
+// ---------------------------------------------------------------------//
+
+export const forgotPassword = (data, userData) => {
+  return async (dispatch) => {
+    console.log(data, 'signin beforef forget');
+    dispatch(
+      signInUser(data, (res) => {
+        console.log('resinauth', res);
+        if (res.status === 200) {
+          dispatch(
+            updateUserPassword(userData, (res) => {
+              console.log('forget', res);
+            }),
+          );
+        }
+      }),
+    );
   };
 };
