@@ -146,5 +146,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: '90%',
   },
+  getStyles: {
+    height: 600,
+    marginVertical: 10,
+  },
 });
 export default styles;

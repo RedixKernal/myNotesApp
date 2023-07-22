@@ -11,11 +11,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ToastMessage from '../../utils/ToastMessage';
 import * as Yup from 'yup';
 import { MaterialIcons } from '@expo/vector-icons';
+
 const SignUpActivity = ({ navigation }) => {
   const dispatch = useDispatch();
-
   const [isLoader, setIsloader] = useState(false);
   const [toast, setToast] = useState({});
+
   const validationSchema = Yup.object({
     userName: Yup.string().required('User name is required'),
     email: Yup.string().required('Email is required'),
@@ -24,12 +25,14 @@ const SignUpActivity = ({ navigation }) => {
       .required('Confirm password is required')
       .oneOf([Yup.ref('password'), null], 'Confirm password must match'),
   });
+
   const initialValues = {
     userName: '',
     password: '',
     confirmPassword: '',
     email: '',
   };
+
   const handleCreateUser = (val) => {
     const payload = {
       displayName: val.userName,
@@ -44,7 +47,7 @@ const SignUpActivity = ({ navigation }) => {
         }
         setTimeout(() => {
           setIsloader(false);
-          res.type !== 'error' && navigation.navigate('LoginActivity');
+          res.status === 200 && navigation.navigate('LoginActivity');
         }, 3000);
       }),
     );
@@ -158,7 +161,7 @@ const SignUpActivity = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
 
-                <View style={styles.forgotContainer}>
+                {/* <View style={styles.forgotContainer}>
                   <Text style={styles.orText}>OR</Text>
                 </View>
 
@@ -174,7 +177,7 @@ const SignUpActivity = ({ navigation }) => {
                       <Text style={styles.signinButtonText}>Continue with Google</Text>
                     </View>
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             )}
           </Formik>

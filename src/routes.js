@@ -11,19 +11,28 @@ import ProfileActivity from './components/profile/index';
 import EditProfileActivity from './components/editProfile/index';
 import EditNoteActivity from './components/note/editNote';
 import { useEffect } from 'react';
-import { getAuth } from 'firebase/auth';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
-import { handlegetAllNote } from './redux/reducer/notes/index';
-import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setNotesData } from './redux/reducer/notes/index';
+import { useDispatch } from 'react-redux';
 const Route = createNativeStackNavigator();
 
 const AppRoutes = () => {
+  const dispatch = useDispatch();
   const { isLogedIn } = useContext(OAuth);
   const [value, setValue] = useState('value');
   const { getItem } = useAsyncStorage('@current_user');
-  const dispatch = useDispatch();
+
   const readItemFromStorage = async () => {
+    console.log('readfromlog...');
+    const notesStoreData = await AsyncStorage.getItem('@notesStoreData');
+    console.log(notesStoreData, 'notesStoreData');
+    if (notesStoreData) {
+      const data = JSON.parse(notesStoreData);
+      console.log('data', data);
+      dispatch(setNotesData(data));
+    }
     const item = await getItem();
     setValue(item);
   };
@@ -31,9 +40,7 @@ const AppRoutes = () => {
   useEffect(() => {
     readItemFromStorage();
   }, [isLogedIn]);
-  useEffect(() => {
-    dispatch(handlegetAllNote());
-  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar

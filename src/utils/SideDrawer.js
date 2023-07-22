@@ -8,6 +8,8 @@ import { signOutUser, delUser } from '../redux/reducer/OAuth/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { OAuth } from '../auth';
+import { setNotesData } from '../redux/reducer/notes/index';
+import { getAuth } from 'firebase/auth';
 function SideDraWer(props) {
   const { handleSignoutUser, userDetails, setDeleteUserData, deleteUserData } = useContext(OAuth);
   const dispatch = useDispatch();
@@ -28,7 +30,11 @@ function SideDraWer(props) {
 
   const removeuserData = async (res) => {
     try {
+      const item = await getItem();
+      await AsyncStorage.setItem('@storeUser', item);
       await AsyncStorage.removeItem('@current_user');
+      await AsyncStorage.removeItem('@notesStoreData');
+      dispatch(setNotesData([]));
       handleSignoutUser(res);
     } catch (e) {
       console.log(e);

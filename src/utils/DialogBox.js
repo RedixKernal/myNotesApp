@@ -15,20 +15,26 @@ function DialogBax({
   onClick = () => null,
   closeBtnText,
   conformBtnText,
+  noActions,
+  getStyles = {},
 }) {
   return (
     <SafeAreaView style={styles.tosat_Container_Overly}>
-      <View style={styles.tosat_Container}>
-        <View style={{ ...styles.tosat_MsgViewr }}>
+      <View style={{ ...styles.tosat_Container, ...getStyles }}>
+        <View style={{ ...styles.tosat_MsgViewr, ...getStyles }}>
           <View style={styles.textWidth}>{message}</View>
-          <View style={styles.actionContainer}>
-            <TouchableOpacity onPress={() => onClose()} style={styles.cancelActionButton}>
-              <Text style={styles.color_white}>{closeBtnText ? closeBtnText : 'Cancel'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => onClick()} style={styles.conformActionButton}>
-              <Text style={styles.color_black}>{conformBtnText ? conformBtnText : 'Conform'}</Text>
-            </TouchableOpacity>
-          </View>
+          {!noActions && (
+            <View style={styles.actionContainer}>
+              <TouchableOpacity onPress={() => onClose()} style={styles.cancelActionButton}>
+                <Text style={styles.color_white}>{closeBtnText ? closeBtnText : 'Cancel'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onClick()} style={styles.conformActionButton}>
+                <Text style={styles.color_black}>
+                  {conformBtnText ? conformBtnText : 'Conform'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -54,14 +60,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    height: 100,
+    minHeight: 100,
     marginVertical: 300,
     // backgroundColor:'red',
   },
   tosat_MsgViewr: {
     marginRight: 4,
     width: '80%',
-    height: 200,
+    minHeight: 200,
     backgroundColor: 'white',
     borderRadius: 8,
     display: 'flex',
@@ -79,6 +85,7 @@ const styles = StyleSheet.create({
   actionContainer: {
     // borderWidth:1,
     paddingHorizontal: 8,
+    marginVertical: 8,
     width: '100%',
     display: 'flex',
     justifyContent: 'flex-end',
