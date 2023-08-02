@@ -14,7 +14,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -22,7 +24,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/android/appLogo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.redixkernal.my_notes"
     },
     "web": {
       "favicon": "./assets/android/appLogo.png"
@@ -34,6 +40,11 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fbf924e4-6b4a-4a0a-931d-9392e7798c18"
+      }
+    }
   }
 }
